@@ -7,7 +7,7 @@ import javax.swing.JPanel;
 
 public class GamePanel extends JPanel{
     
-    private boolean debug = true;
+    private boolean debug = false;
 
     /**
      * 
