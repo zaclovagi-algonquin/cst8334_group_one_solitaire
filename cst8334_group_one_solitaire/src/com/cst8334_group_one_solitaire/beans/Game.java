@@ -30,48 +30,46 @@ public class Game {
         System.out.println("mouse clicked at: " + x + ", " + y);
         //deck check
         if (board.stockPile.isInArea(x, y)) {
+            System.out.println("Deck pile clicked");
             if (board.stockPile.isEmpty()) {
                 if (!board.talon.isEmpty()) {
                     while (!board.talon.isEmpty()) {
                         Card card = board.talon.removeTop(false);
                         card.flip();
                         board.stockPile.addCard(card, false);
-                       // GameGraphics.redraw();
+                       
                     }
+                    return;
                 }
             } else {
                 Card card = board.stockPile.removeTop(false);
                 card.flip();
                 board.talon.addCard(card, false);
-                //GameGraphics.redraw();
+                return;
             }
-            System.out.println("Deck pile clicked");
-            return;
             
             //talon check
         } else if (board.talon.isInArea(x, y)) {
-            if (!board.talon.isEmpty()) {
-                checkForMove(board.talon);
-            }
             System.out.println("Talon pile clicked");
-            return;
+            if (!board.talon.isEmpty()) {
+                if (checkForMove(board.talon))
+                return;
+            }
         } else {
             //tableau check
-            for (int i = 0; i < board.tableau.length; i ++) {
+            for (int i = 0; i < 7; i ++) {
                 if (board.tableau[i].isInArea(x, y)) {
                     System.out.println("Tableau[" + i + "] clicked");
                     if (!board.tableau[i].isEmpty()) {
                         if (board.tableau[i].inspectTop().isFaceUp()) {
                             System.out.println(board.tableau[i].inspectTop().toString());
-                            checkForMove(board.tableau[i]);
+                            if (checkForMove(board.tableau[i]))
+                            return;
                         } else { board.tableau[i].inspectTop().flip();}
                     } else {
-                        checkForMove(board.tableau[i]);
+                        if (checkForMove(board.tableau[i]))
+                        return;
                     }
-                    
-                    
-                    
-                    return;
                 }
             }
             //foundation check
@@ -85,68 +83,56 @@ public class Game {
         }
     }
     
-    private static void checkForMove(CardPile fromPile) {
-        Card tempCard = fromPile.inspectTop();
-        
-        //check if ace
-        if (tempCard.getRank() == 0) {
+    private static boolean checkForMove(CardPile fromPile) {
+        if (!fromPile.isEmpty()) {
+            Card tempCard = fromPile.inspectTop();
+            System.out.println("Clicked on: " + tempCard.toString());
+            
+            //check foundations
             for (int i = 0; i < 4; i++) {
-                if (board.foundations[i].isEmpty()) {
-                    moveCard(fromPile, board.foundations[i]);
-                    return;
-                    
-                }
-            }
-        }
-        //check if card can go in foundations
-        for (int i = 0; i < 4; i++) {
-            if (!board.foundations[i].isEmpty()) {
-                Card foundationCard = board.foundations[i].inspectTop();
-                if (tempCard.getSuit() == foundationCard.getSuit()) {
-                    if (tempCard.getRank() - foundationCard.getRank() == 1) {
-                        moveCard(fromPile, board.foundations[i]);
-                        return;
+                CardPile toPile = board.foundations[i];
+                if (toPile.isEmpty()) {
+                    if (tempCard.getRank() == 0) { //is ace
+                        moveCard(fromPile, toPile);
+                        return true;
+                    }
+                } else { //foundations aren't empty, check if card matches suit and rank
+                    Card foundationTop = toPile.inspectTop();
+                    if (tempCard.getSuit() == foundationTop.getSuit()) {
+                        //suit matches, check rank
+                        if (tempCard.getRank() - foundationTop.getRank() == 1) {
+                            moveCard(fromPile, toPile);
+                            return true;
+                        }
                     }
                 }
-            }
+            }//end of foundations
             
-        }
+            //check tableau
+            for (int i = 0; i < 7; i++) {
+                CardPile toPile = board.tableau[i];
+                if (fromPile != toPile) {
+                    if (!toPile.isEmpty()) {
+                        Card tableauTop = toPile.inspectTop();
+                        if (checkCardColor(tempCard, tableauTop)) { //color is opposite
+                            if (tableauTop.getRank() - tempCard.getRank() == 1) {
+                                moveCard(fromPile, toPile);
+                                return true;
+                            }
+                        }
+                    } else { //pile is empty, only kings can move.
+                        if (tempCard.getRank() == 12) {
+                            moveCard(fromPile, toPile);
+                            return true;
+                        }
+                    }
+                    
+                }//end of piles !=
+            } //end of tableau
+           
+        } //end of !fromPile.isEmpty()
         
-        //basic move to tableau spot
-        for (int i = 0; i < 7; i++) 
-        {
-            if (board.tableau[i] == fromPile) {
-                return;
-            } 
-            if (!board.tableau[i].isEmpty()) 
-            {
-                Card tableauCard = board.tableau[i].inspectTop();
-                if (checkCardColor(tempCard, tableauCard)) {
-                    
-                    if (tableauCard.getRank() - tempCard.getRank() == 1) {
-                        System.out.println("different colour");
-                        System.out.println("1 less than rank");
-                        moveCard(fromPile, board.tableau[i]);
-                       return;
-                    }
-                } 
-            } 
-            
-        }
-      //check move king to empty tableau
-        for (int i = 0; i < 7; i++) 
-        {
-            if (board.tableau[i] == fromPile) {
-                return;
-            } if (board.tableau[i].isEmpty()) 
-            {
-                if (tempCard.getRank() == 12) {
-                    moveCard(fromPile, board.tableau[i]);
-                    return;
-                }
-            } 
-            
-        }
+        return false;
         
     }
     
@@ -167,7 +153,7 @@ public class Game {
     private static boolean checkCardColor(Card card1, Card card2) {
         Color color1;
         Color color2;
-        if (card1.getSuit() == 1 || card1.getSuit()==3) {
+        if (card1.getSuit() == 1 || card1.getSuit() == 3) {
             color1 = Color.BLACK;
         } else color1 = Color.RED;
         if (card2.getSuit() == 1 || card2.getSuit() == 3) {
