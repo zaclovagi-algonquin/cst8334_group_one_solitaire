@@ -21,7 +21,9 @@ public class GameSpace {
     public boolean isInArea(int xPos , int yPos) {
         if (xPos >= x && xPos <= xDim && yPos >= y && yPos <= yDim) {
             return true;
-        } else return false;
+        } else {
+        	return false; 
+        	}
     }
     
     public int width() {
