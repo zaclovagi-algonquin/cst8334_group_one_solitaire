@@ -25,6 +25,13 @@ public class CommandInvoker {
     public static CommandInvoker getInstance() {
     	return INSTANCE;
     }
+    
+    /**
+     * Clears undoStack on game restart 
+     */
+    public void restart() {
+    	undoStack.clear();
+    } 
 	
 	
 	/**
