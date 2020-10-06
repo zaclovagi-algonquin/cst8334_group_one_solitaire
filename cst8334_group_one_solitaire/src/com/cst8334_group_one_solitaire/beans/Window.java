@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JButton;
 
 import com.cst8334_group_one_solitaire.commands.CommandInvoker;
@@ -31,7 +32,11 @@ public class Window extends JFrame{
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            CommandInvoker.getInstance().undoOperation();
+            if(CommandInvoker.getInstance().undoOperation()) {
+            	return;
+            } else {
+            	JOptionPane.showMessageDialog(null, "No move to undo.");
+            }
         }
         
         
