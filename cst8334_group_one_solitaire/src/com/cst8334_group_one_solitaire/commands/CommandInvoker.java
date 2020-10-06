@@ -49,13 +49,15 @@ public class CommandInvoker {
 	/**
 	 * Deletes the command from stack and undoes the game move
 	 */
-	public void undoOperation() {
+	public boolean undoOperation() {
 		if (isUndoAvailable()) {
 			Command command = undoStack.pop();
 			command.undo();
 			System.out.println("Command Undone");
+			return true;
 		} else {
 			System.out.println("Stack is empty");
+			return false;
 		}
 	}
 	
