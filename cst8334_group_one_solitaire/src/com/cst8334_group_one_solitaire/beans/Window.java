@@ -7,8 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 
@@ -49,11 +47,7 @@ public class Window extends JFrame{
     }
     
     public Window() {
-        addWindowListener(new WindowAdapter(){  
-            public void windowClosing(WindowEvent e) {  
-                dispose();  
-            }  
-        });
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setSize(1366, (int)screenSize.getHeight()-100);
         getContentPane().setBackground(new Color(0,120,0));
