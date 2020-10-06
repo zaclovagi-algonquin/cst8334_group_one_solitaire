@@ -1,18 +1,30 @@
 package com.cst8334_group_one_solitaire.beans;
 
+
 import java.awt.Color;
+
+import com.cst8334_group_one_solitaire.commands.CommandInvoker;
+import com.cst8334_group_one_solitaire.commands.MoveCard;
 
 public class Game {
     
     
     public static Board board;
+    private CommandInvoker commandInvoker;
+    private static Game INSTANCE = new Game();
     
-    public Game() {
+    private Game() {
+    	commandInvoker = CommandInvoker.getInstance();
         GameGraphics.loadGraphics(this);
         startGame();
+        
     }
     
-    private static void startGame() {
+    public static Game getInstance() {
+    	return INSTANCE;
+    }
+    
+    private void startGame() {
         board = new Board(13); //manually declaring pile count since it is still hard coded
         GameGraphics.initializeWindow();
         board.shuffle();
@@ -20,13 +32,13 @@ public class Game {
        GameGraphics.getPanel().repaint();
     }
     
-    public static void restart() {
+    public void restart() {
         board = new Board(13);
         board.shuffle();
         GameGraphics.getPanel().repaint();
     }
     
-    public static void select(int x, int y) {
+    public void select(int x, int y) {
         System.out.println("mouse clicked at: " + x + ", " + y);
         //deck check
         if (board.stockPile.isInArea(x, y)) {
@@ -87,7 +99,7 @@ public class Game {
         }
     }
     
-    private static boolean checkForMove(CardPile fromPile) {
+    private boolean checkForMove(CardPile fromPile) {
         if (!fromPile.isEmpty()) {
             Card tempCard = fromPile.inspectTop();
             System.out.println("Clicked on: " + tempCard.toString());
@@ -97,7 +109,7 @@ public class Game {
                 CardPile toPile = board.foundations[i];
                 if (toPile.isEmpty()) {
                     if (tempCard.getRank() == 0) { //is ace
-                        moveCard(fromPile, toPile);
+                    	commandInvoker.executeOperation(new MoveCard(this, fromPile, toPile));
                         return true;
                     }
                 } else { //foundations aren't empty, check if card matches suit and rank
@@ -105,7 +117,7 @@ public class Game {
                     if (tempCard.getSuit() == foundationTop.getSuit()) {
                         //suit matches, check rank
                         if (tempCard.getRank() - foundationTop.getRank() == 1) {
-                            moveCard(fromPile, toPile);
+                        	commandInvoker.executeOperation(new MoveCard(this, fromPile, toPile));
                             return true;
                         }
                     }
@@ -120,13 +132,13 @@ public class Game {
                         Card tableauTop = toPile.inspectTop();
                         if (checkCardColor(tempCard, tableauTop)) { //color is opposite
                             if (tableauTop.getRank() - tempCard.getRank() == 1) {
-                                moveCard(fromPile, toPile);
+                                commandInvoker.executeOperation(new MoveCard(this, fromPile, toPile));
                                 return true;
                             }
                         }
                     } else { //pile is empty, only kings can move.
                         if (tempCard.getRank() == 12) {
-                            moveCard(fromPile, toPile);
+                        	commandInvoker.executeOperation(new MoveCard(this, fromPile, toPile));
                             return true;
                         }
                     }
@@ -140,8 +152,13 @@ public class Game {
         
     }
     
-    private static void moveCard(CardPile fromPile, CardPile toPile) {
-        Card card = fromPile.inspectTop();
+    private static boolean checkCardColor(Card card1, Card card2) {
+        return card1.getColor() != card2.getColor();
+    }
+
+	public void moveCard(CardPile fromPile, CardPile toPile) {
+        
+		Card card = fromPile.inspectTop();
         boolean retract = true;
         boolean expand = true;
         if (fromPile == board.talon || fromPile == board.stockPile) {
@@ -152,10 +169,7 @@ public class Game {
         }
         toPile.addCard(card, expand);
         fromPile.removeTop(retract);
-    }
-    
-    private static boolean checkCardColor(Card card1, Card card2) {
-        return card1.getColor() != card2.getColor();
-    }
+		
+	}
 
 }

@@ -10,38 +10,40 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import javax.swing.JFrame;
+
+import com.cst8334_group_one_solitaire.commands.CommandInvoker;
 
 public class Window extends JFrame{
     private static final long serialVersionUID = 1L;
+    
     
     private class RestartButtonListener implements ActionListener{
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            Game.restart();
+            Game.getInstance().restart();
             repaint();
             
         }
     }
     
-    /* undo button feature disabled in this build
+    // undo button feature disabled in this build
     private class UndoButtonListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            
+            CommandInvoker.getInstance().undoOperation();
         }
         
         
-    } */
+    }
     
     private class MouseKeeper extends MouseAdapter{
         public void mousePressed(MouseEvent e) {
             int x = e.getX();
             int y = e.getY();
-            Game.select(x, y);
+            Game.getInstance().select(x, y);
         } 
         
     }
@@ -59,13 +61,13 @@ public class Window extends JFrame{
         setResizable(true);
         addMouseListener(new MouseKeeper());
         Button restart = new Button("Restart");
-        //Button undo = new Button("Undo");
+        Button undo = new Button("Undo");
         restart.addActionListener(new RestartButtonListener());
         restart.setBackground(new Color(160,82,45)); //change color of button
-        //undo.addActionListener(new UndoButtonListener());
-        //undo.setBackground(new Color(160,82,45)); //change color of button    undo button feature disabled in this build
+        undo.addActionListener(new UndoButtonListener());
+        undo.setBackground(new Color(160,82,45)); //change color of button
         add("South", restart);
-        //add("North", undo);
+        add("North", undo);
         setVisible(true);
     }
     
