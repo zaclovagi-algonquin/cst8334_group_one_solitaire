@@ -4,6 +4,8 @@ package com.cst8334_group_one_solitaire.beans;
 import java.awt.Color;
 
 import com.cst8334_group_one_solitaire.commands.CommandInvoker;
+import com.cst8334_group_one_solitaire.commands.DrawCard;
+import com.cst8334_group_one_solitaire.commands.FlipCard;
 import com.cst8334_group_one_solitaire.commands.MoveCard;
 
 public class Game {
@@ -36,6 +38,7 @@ public class Game {
         board = new Board(13);
         board.shuffle();
         GameGraphics.getPanel().repaint();
+        commandInvoker.restart();
     }
     
     public void select(int x, int y) {
@@ -46,17 +49,13 @@ public class Game {
             if (board.stockPile.isEmpty()) {
                 if (!board.talon.isEmpty()) {
                     while (!board.talon.isEmpty()) {
-                        Card card = board.talon.removeTop(false);
-                        card.flip();
-                        board.stockPile.addCard(card, false);
+                    	addToDeck();
                        
                     }
                     return;
                 }
             } else {
-                Card card = board.stockPile.removeTop(false);
-                card.flip();
-                board.talon.addCard(card, false);
+            	commandInvoker.executeOperation(new DrawCard(this));
                 return;
             }
             
@@ -77,7 +76,10 @@ public class Game {
                             System.out.println(board.tableau[i].inspectTop().toString());
                             if (checkForMove(board.tableau[i]))
                             return;
-                        } else { board.tableau[i].inspectTop().flip();}
+                        } else { 
+                        	Card cardToFlip = board.tableau[i].inspectTop();
+                        	commandInvoker.executeOperation(new FlipCard(this, cardToFlip));
+                        	}
                     } else {
                         if (checkForMove(board.tableau[i]))
                         return;
@@ -178,5 +180,22 @@ public class Game {
         fromPile.removeTop(retract);
 		
 	}
+	
+	public void drawFromDeck() {
+		Card card = board.stockPile.removeTop(false);
+        card.flip();
+        board.talon.addCard(card, false);
+	}
+	
+	public void addToDeck() {
+		Card card = board.talon.removeTop(false);
+        card.flip();
+        board.stockPile.addCard(card, false);
+	}
+	
+	public void flipCard(Card cardToFlip) {
+		cardToFlip.flip();
+	}
+	
 
 }
