@@ -1,6 +1,5 @@
 package com.cst8334_group_one_solitaire.beans;
 
-import java.awt.Button;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -11,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
+import javax.swing.JButton;
 
 import com.cst8334_group_one_solitaire.commands.CommandInvoker;
 
@@ -60,12 +60,14 @@ public class Window extends JFrame{
         setTitle("Solitaire Game Java - Zac, David, Theodore, Sebastien");
         setResizable(true);
         addMouseListener(new MouseKeeper());
-        Button restart = new Button("Restart");
-        Button undo = new Button("Undo");
+        JButton restart = new JButton("Restart");
+        JButton undo = new JButton("Undo");
         restart.addActionListener(new RestartButtonListener());
         restart.setBackground(new Color(160,82,45)); //change color of button
+        restart.setForeground(Color.WHITE); // text color
         undo.addActionListener(new UndoButtonListener());
         undo.setBackground(new Color(160,82,45)); //change color of button
+        undo.setForeground(Color.WHITE); // text color
         add("South", restart);
         add("North", undo);
         setVisible(true);
