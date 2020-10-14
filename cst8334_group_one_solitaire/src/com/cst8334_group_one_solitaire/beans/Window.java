@@ -28,12 +28,12 @@ public class Window extends JFrame{
     }
     
     // undo button feature disabled in this build
-    private class UndoButtonListener implements ActionListener {
+    private static class UndoButtonListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
             if(CommandInvoker.getInstance().undoOperation()) {
-            	return;
+                System.out.println("Move undone");
             } else {
             	JOptionPane.showMessageDialog(null, "No move to undo.");
             }
@@ -42,7 +42,7 @@ public class Window extends JFrame{
         
     }
     
-    private class MouseKeeper extends MouseAdapter{
+    private static class MouseKeeper extends MouseAdapter{
         public void mousePressed(MouseEvent e) {
             int x = e.getX();
             int y = e.getY();
@@ -59,16 +59,19 @@ public class Window extends JFrame{
         setTitle("Solitaire Game Java - Zac, David, Theodore, Sebastien");
         setResizable(true);
         addMouseListener(new MouseKeeper());
+        
         JButton restart = new JButton("Restart");
-        JButton undo = new JButton("Undo");
         restart.addActionListener(new RestartButtonListener());
         restart.setBackground(new Color(160,82,45)); //change color of button
         restart.setForeground(Color.WHITE); // text color
+        add("South", restart);
+        
+        JButton undo = new JButton("Undo");
         undo.addActionListener(new UndoButtonListener());
         undo.setBackground(new Color(160,82,45)); //change color of button
         undo.setForeground(Color.WHITE); // text color
-        add("South", restart);
         add("North", undo);
+        
         setVisible(true);
     }
     
