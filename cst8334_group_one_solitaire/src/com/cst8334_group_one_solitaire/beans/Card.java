@@ -1,5 +1,6 @@
 package com.cst8334_group_one_solitaire.beans;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import javax.swing.JLabel;
 
@@ -24,7 +25,7 @@ public class Card {
     private int suit;
     
     //constructor
-    Card(int suit, int rank){ 
+    public Card(int suit, int rank){ 
         this.suit = suit; 
         this.rank = rank; 
         faceUp = false;
@@ -64,6 +65,15 @@ public class Card {
     public void flip() { 
         faceUp = !faceUp; 
         }
+    
+    public Color getColor() {
+    	if(suit == HEART || suit == DIAMOND) {
+    		return Color.RED;
+    	}else {
+    		return Color.black;
+    	}
+    }
+    
     @Override
     public String toString() {
         return "Card [faceUp=" + faceUp + ", rank=" + rank + ", suit=" + suit + "]";
