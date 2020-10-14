@@ -8,7 +8,7 @@ public class CommandInvoker {
 	
 	// Declare variables
 	private final Stack<Command> undoStack;
-	private static CommandInvoker INSTANCE = new CommandInvoker();
+	private static final CommandInvoker INSTANCE = new CommandInvoker();
 	
 	
 	/**

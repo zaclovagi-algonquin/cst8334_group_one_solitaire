@@ -5,8 +5,8 @@ import com.cst8334_group_one_solitaire.beans.Game;
 
 public class FlipCard implements Command {
 	
-private Game game;
-private Card cardToFlip;
+private final Game game;
+private final Card cardToFlip;
 	
 	public FlipCard(Game game, Card cardToFlip) {
 		this.game = game;

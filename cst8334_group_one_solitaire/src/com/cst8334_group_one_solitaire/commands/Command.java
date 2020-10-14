@@ -5,7 +5,7 @@ package com.cst8334_group_one_solitaire.commands;
  */
 public interface Command {
 	
-	public void execute();
-	public void undo();
+	void execute();
+	void undo();
 
 }
