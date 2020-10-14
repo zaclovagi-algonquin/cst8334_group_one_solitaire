@@ -1,7 +1,6 @@
 package com.cst8334_group_one_solitaire.beans;
 
 
-import java.awt.Color;
 
 import com.cst8334_group_one_solitaire.commands.CommandInvoker;
 import com.cst8334_group_one_solitaire.commands.MoveCard;
@@ -10,8 +9,8 @@ public class Game {
     
     
     public static Board board;
-    private CommandInvoker commandInvoker;
-    private static Game INSTANCE = new Game();
+    private final CommandInvoker commandInvoker;
+    private static final Game INSTANCE = new Game();
     
     private Game() {
     	commandInvoker = CommandInvoker.getInstance();
@@ -57,7 +56,7 @@ public class Game {
         }
     }
 
-	private static void tableauClicked(int i) {
+	private void tableauClicked(int i) {
 		System.out.println("Tableau[" + i + "] clicked");
 		if (!board.tableau[i].isEmpty()) {
 		    if (board.tableau[i].inspectTop().isFaceUp()) {
@@ -71,7 +70,7 @@ public class Game {
 		}
 	}
 
-	private static void talonClicked() {
+	private void talonClicked() {
 		System.out.println("Talon pile clicked");
 		if (!board.talon.isEmpty()) {
 		    if (checkForMove(board.talon))
@@ -89,13 +88,11 @@ public class Game {
                     board.stockPile.addCard(card, false);
                    
                 }
-                return;
             }
         } else {
             Card card = board.stockPile.removeTop(false);
             card.flip();
             board.talon.addCard(card, false);
-            return;
         }
     }
     
@@ -171,5 +168,21 @@ public class Game {
         fromPile.removeTop(retract);
 		
 	}
+
+    public void drawFromDeck() {
+        Card card = board.stockPile.removeTop(false);
+        card.flip();
+        board.talon.addCard(card, false);
+    }
+
+    public void addToDeck() {
+        Card card = board.talon.removeTop(false);
+        card.flip();
+        board.stockPile.addCard(card, false);
+    }
+
+    public void flipCard(Card cardToFlip) {
+        cardToFlip.flip();
+    }
 
 }
