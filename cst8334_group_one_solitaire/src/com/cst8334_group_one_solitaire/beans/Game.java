@@ -12,15 +12,14 @@ public class Game {
     
     
     public static Board board;
-    private CommandInvoker commandInvoker;
-    private static Game INSTANCE = new Game();
+    private final CommandInvoker commandInvoker;
+    private static final Game INSTANCE = new Game();
     
     private Game() {
     	commandInvoker = CommandInvoker.getInstance();
         GameGraphics.loadGraphics(this);
         startGame();
-        
-    }
+        }
     
     public static Game getInstance() {
     	return INSTANCE;
@@ -52,19 +51,16 @@ public class Game {
                     	addToDeck();
                        
                     }
-                    return;
                 }
             } else {
             	commandInvoker.executeOperation(new DrawCard(this));
-                return;
             }
             
             //talon check
         } else if (board.talon.isInArea(x, y)) {
             System.out.println("Talon pile clicked");
             if (!board.talon.isEmpty()) {
-                if (checkForMove(board.talon))
-                return;
+                checkForMove(board.talon);
             }
         } else {
             //tableau check
@@ -155,14 +151,16 @@ public class Game {
         Color color2;
         if (card1.getSuit() == 1 || card1.getSuit() == 3) {
             color1 = Color.BLACK;
-        } else color1 = Color.RED;
+        } else {
+            color1 = Color.RED;
+        }
         if (card2.getSuit() == 1 || card2.getSuit() == 3) {
             color2 = Color.BLACK;
-        } else color2 = Color.RED;
-        
-        if (color1 != color2) {
-            return true;
-        } else return false;
+        } else {
+            color2 = Color.RED;
+        }
+
+        return color1 != color2;
     }
 
 	public void moveCard(CardPile fromPile, CardPile toPile) {
@@ -178,8 +176,8 @@ public class Game {
         }
         toPile.addCard(card, expand);
         fromPile.removeTop(retract);
-		
 	}
+	
 	
 	public void drawFromDeck() {
 		Card card = board.stockPile.removeTop(false);
