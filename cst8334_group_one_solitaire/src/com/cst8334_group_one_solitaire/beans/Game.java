@@ -3,6 +3,8 @@ package com.cst8334_group_one_solitaire.beans;
 
 
 import com.cst8334_group_one_solitaire.commands.CommandInvoker;
+import com.cst8334_group_one_solitaire.commands.DrawCard;
+import com.cst8334_group_one_solitaire.commands.FlipCard;
 import com.cst8334_group_one_solitaire.commands.MoveCard;
 
 public class Game {
@@ -63,7 +65,10 @@ public class Game {
 		        System.out.println(board.tableau[i].inspectTop().toString());
 		        if (checkForMove(board.tableau[i]))
 		        return;
-		    } else { board.tableau[i].inspectTop().flip();}
+		    } else {
+		        Card cardToFlip = board.tableau[i].inspectTop();
+		        commandInvoker.executeOperation(new FlipCard(this, cardToFlip));
+		    }
 		} else {
 		    if (checkForMove(board.tableau[i]))
 		    return;
@@ -78,21 +83,17 @@ public class Game {
 		}
 	}
     
-    private static void stockPileClicked() {
+    private void stockPileClicked() {
     	System.out.println("Deck pile clicked");
         if (board.stockPile.isEmpty()) {
             if (!board.talon.isEmpty()) {
                 while (!board.talon.isEmpty()) {
-                    Card card = board.talon.removeTop(false);
-                    card.flip();
-                    board.stockPile.addCard(card, false);
+                    addToDeck();
                    
                 }
             }
         } else {
-            Card card = board.stockPile.removeTop(false);
-            card.flip();
-            board.talon.addCard(card, false);
+            commandInvoker.executeOperation(new DrawCard(this));
         }
     }
     
