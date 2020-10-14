@@ -20,8 +20,8 @@ public class Card {
     
     //values to hold instance rank, suit and faceUp
     private boolean faceUp;
-    private int rank;
-    private int suit;
+    private final int rank;
+    private final int suit;
     
     //constructor
     Card(int suit, int rank){ 

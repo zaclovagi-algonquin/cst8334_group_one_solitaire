@@ -5,8 +5,8 @@ import java.util.Stack;
 
 public class CardPile {
     //these values store the coordinates of the pile
-    private GameSpace gameSpace;
-    private Stack<Card> pile; //this is the stack of cards in the pile
+    private final GameSpace gameSpace;
+    private final Stack<Card> pile; //this is the stack of cards in the pile
     
     CardPile(int x, int y, int xDim, int yDim){ 
         gameSpace = new GameSpace(x,y, xDim, yDim);
