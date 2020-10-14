@@ -4,9 +4,9 @@ import com.cst8334_group_one_solitaire.beans.Game;
 
 public class MoveCard implements Command{
 	
-	private Game game;
-	private CardPile fromPile;
-	private CardPile toPile;
+	private final Game game;
+	private final CardPile fromPile;
+	private final CardPile toPile;
 	
 	public MoveCard (Game game, CardPile fromPile, CardPile toPile) {
 		this.fromPile = fromPile;

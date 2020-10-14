@@ -4,7 +4,7 @@ import com.cst8334_group_one_solitaire.beans.Game;
 
 public class DrawCard implements Command{
 	
-	private Game game;
+	private final Game game;
 	
 	public DrawCard (Game game) {
 		this.game = game;
