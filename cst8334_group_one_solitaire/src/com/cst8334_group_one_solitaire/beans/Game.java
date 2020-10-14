@@ -30,56 +30,60 @@ public class Game {
         System.out.println("mouse clicked at: " + x + ", " + y);
         //deck check
         if (board.stockPile.isInArea(x, y)) {
-            System.out.println("Deck pile clicked");
-            if (board.stockPile.isEmpty()) {
-                if (!board.talon.isEmpty()) {
-                    while (!board.talon.isEmpty()) {
-                        Card card = board.talon.removeTop(false);
-                        card.flip();
-                        board.stockPile.addCard(card, false);
-                       
-                    }
-                    return;
-                }
-            } else {
-                Card card = board.stockPile.removeTop(false);
-                card.flip();
-                board.talon.addCard(card, false);
-                return;
-            }
-            
+            stockPileClicked();
             //talon check
         } else if (board.talon.isInArea(x, y)) {
-            System.out.println("Talon pile clicked");
-            if (!board.talon.isEmpty()) {
-                if (checkForMove(board.talon))
-                return;
-            }
+            talonClicked();
         } else {
             //tableau check
             for (int i = 0; i < 7; i ++) {
                 if (board.tableau[i].isInArea(x, y)) {
-                    System.out.println("Tableau[" + i + "] clicked");
-                    if (!board.tableau[i].isEmpty()) {
-                        if (board.tableau[i].inspectTop().isFaceUp()) {
-                            System.out.println(board.tableau[i].inspectTop().toString());
-                            if (checkForMove(board.tableau[i]))
-                            return;
-                        } else { board.tableau[i].inspectTop().flip();}
-                    } else {
-                        if (checkForMove(board.tableau[i]))
-                        return;
-                    }
+                    tableauClicked(i);
                 }
             }
-            //foundation check
-            for (int i = 0; i < board.foundations.length; i++) {
-                if (board.foundations[i].isInArea(x, y)) {
-                    //do foundation rules
-                    System.out.println("Foundation[" + i + "] clicked");
-                    return;
+            //removed foundation check
+        }
+    }
+
+	private static void tableauClicked(int i) {
+		System.out.println("Tableau[" + i + "] clicked");
+		if (!board.tableau[i].isEmpty()) {
+		    if (board.tableau[i].inspectTop().isFaceUp()) {
+		        System.out.println(board.tableau[i].inspectTop().toString());
+		        if (checkForMove(board.tableau[i]))
+		        return;
+		    } else { board.tableau[i].inspectTop().flip();}
+		} else {
+		    if (checkForMove(board.tableau[i]))
+		    return;
+		}
+	}
+
+	private static void talonClicked() {
+		System.out.println("Talon pile clicked");
+		if (!board.talon.isEmpty()) {
+		    if (checkForMove(board.talon))
+		    return;
+		}
+	}
+    
+    private static void stockPileClicked() {
+    	System.out.println("Deck pile clicked");
+        if (board.stockPile.isEmpty()) {
+            if (!board.talon.isEmpty()) {
+                while (!board.talon.isEmpty()) {
+                    Card card = board.talon.removeTop(false);
+                    card.flip();
+                    board.stockPile.addCard(card, false);
+                   
                 }
+                return;
             }
+        } else {
+            Card card = board.stockPile.removeTop(false);
+            card.flip();
+            board.talon.addCard(card, false);
+            return;
         }
     }
     
@@ -151,18 +155,7 @@ public class Game {
     }
     
     private static boolean checkCardColor(Card card1, Card card2) {
-        Color color1;
-        Color color2;
-        if (card1.getSuit() == 1 || card1.getSuit() == 3) {
-            color1 = Color.BLACK;
-        } else color1 = Color.RED;
-        if (card2.getSuit() == 1 || card2.getSuit() == 3) {
-            color2 = Color.BLACK;
-        } else color2 = Color.RED;
-        
-        if (color1 != color2) {
-            return true;
-        } else return false;
+        return card1.getColor() != card2.getColor();
     }
 
 }

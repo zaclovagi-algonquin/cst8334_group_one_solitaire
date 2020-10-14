@@ -8,7 +8,7 @@ public class CardPile {
     private GameSpace gameSpace;
     private Stack<Card> pile; //this is the stack of cards in the pile
     
-    CardPile(int x, int y, int xDim, int yDim){ 
+    public CardPile(int x, int y, int xDim, int yDim){ 
         gameSpace = new GameSpace(x,y, xDim, yDim);
         pile = new Stack<Card>(); }
     
