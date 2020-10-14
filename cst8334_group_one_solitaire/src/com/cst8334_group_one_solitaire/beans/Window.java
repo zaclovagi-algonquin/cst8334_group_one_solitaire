@@ -22,12 +22,12 @@ public class Window extends JFrame{
         @Override
         public void actionPerformed(ActionEvent e) {
             Game.getInstance().restart();
+            CommandInvoker.getInstance().restart();
             repaint();
             
         }
     }
-    
-    // undo button feature disabled in this build
+
     private static class UndoButtonListener implements ActionListener {
 
         @Override
