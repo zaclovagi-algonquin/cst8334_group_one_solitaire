@@ -2,12 +2,13 @@ package com.cst8334_group_one_solitaire.beans;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.util.Enumeration;
 import javax.swing.JPanel;
 
 public class GamePanel extends JPanel{
-    
-    private boolean debug = false;
+
+    private final boolean debug = false;
 
     /**
      * 
@@ -59,6 +60,7 @@ public class GamePanel extends JPanel{
 
         //System.out.println("painting");
         repaint();
+        setLayout(new GridLayout());
         
     }
 

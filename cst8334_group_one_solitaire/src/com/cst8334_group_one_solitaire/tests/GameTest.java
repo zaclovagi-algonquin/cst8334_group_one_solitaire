@@ -12,7 +12,7 @@ import com.cst8334_group_one_solitaire.beans.Card;
 import com.cst8334_group_one_solitaire.beans.Game;
 
 class GameTest {
-	
+	Game game = Game.getInstance();
 	@BeforeEach
 	public void setUp() {
 		Game.board = new Board(13);
@@ -22,8 +22,8 @@ class GameTest {
 	@Test
 	public void stockPileClickedShouldRemoveTopStockCardWhenStockNotEmpty() {
 		int expectedStockPileSize = Game.board.stockPile.size() - 1;
-		
-		Game.select(1200,  55);
+
+		game.select(1200,  55);
 		
 		assertEquals(Game.board.stockPile.size(), expectedStockPileSize);
 	}
@@ -31,15 +31,15 @@ class GameTest {
 	@Test
 	public void stockPileClickedShouldAddRemovedCardToTalonWhenStockNotEmpty() {
 		int expectedTalonSize = Game.board.talon.size() + 1;
-		
-		Game.select(1200, 55);
+
+		game.select(1200, 55);
 		
 		assertEquals(Game.board.talon.size(), expectedTalonSize);
 	}
 	
 	@Test
 	public void stockPileClickedShouldFlipTalonCardUpWhenStockNotEmpty() {
-		Game.select(1200, 55);
+		game.select(1200, 55);
 		assertTrue(Game.board.talon.inspectTop().isFaceUp());
 	}
 
@@ -50,8 +50,8 @@ class GameTest {
 			card.flip();
 			Game.board.talon.addCard(card, false);
 		}
-		
-		Game.select(1200, 55);
+
+		game.select(1200, 55);
 		
 		assertEquals(Game.board.talon.size(), 0);
 		
@@ -64,8 +64,8 @@ class GameTest {
 			card.flip();
 			Game.board.talon.addCard(card, false);
 		}
-		
-		Game.select(1200, 55);
+
+		game.select(1200, 55);
 		
 		assertFalse(Game.board.stockPile.inspectTop().isFaceUp());
 	}
@@ -74,8 +74,8 @@ class GameTest {
 	public void talonClickedShouldMoveAceHeartsToFoundation() {
 		Card cardToMove = new Card(0, 0); //ace of hearts should move to foundation if talon is clicked
 		Game.board.talon.addCard(cardToMove, false);
-		
-		Game.select(1075, 55);
+
+		game.select(1075, 55);
 		
 		assertTrue(Game.board.talon.isEmpty());
 		assertEquals(Game.board.foundations[0].inspectTop().toString(), cardToMove.toString());
@@ -87,8 +87,8 @@ class GameTest {
 		Card tableauOneTop = new Card(3, 2); //two of clubs
 		Game.board.talon.addCard(cardToMove, false);
 		Game.board.tableau[0].addCard(tableauOneTop, true);
-		
-		Game.select(1075, 55);
+
+		game.select(1075, 55);
 		
 		assertTrue(Game.board.talon.isEmpty());
 		assertEquals(Game.board.tableau[0].inspectTop().toString(), cardToMove.toString());
@@ -107,8 +107,8 @@ class GameTest {
 		
 		Game.board.tableau[0].inspectTop().flip();
 		Game.board.tableau[0].addCard(cardToMove, true);
-	
-		Game.select(15, Card.HEIGHT + 65);
+
+		game.select(15, Card.HEIGHT + 65);
 
 		assertEquals(Game.board.tableau[0].size(), 1);
 		assertFalse(Game.board.tableau[0].inspectTop().isFaceUp());
@@ -124,8 +124,8 @@ class GameTest {
 
 		Game.board.tableau[0].inspectTop().flip();
 		Game.board.tableau[0].addCard(cardToMove, true);
-	
-		Game.select(15, Card.HEIGHT + 65);
+
+		game.select(15, Card.HEIGHT + 65);
 
 		assertEquals(Game.board.tableau[0].size(), 1);
 		assertFalse(Game.board.tableau[0].inspectTop().isFaceUp());
@@ -148,8 +148,8 @@ class GameTest {
 		Game.board.tableau[0].inspectTop().flip();
 		Game.board.tableau[0].addCard(twoHearts, true);
 		Game.board.tableau[1].addCard(threeClub, true);
-	
-		Game.select(15, Card.HEIGHT + 65);
+
+		game.select(15, Card.HEIGHT + 65);
 
 		assertEquals(Game.board.tableau[0].size(), 1);
 		assertFalse(Game.board.tableau[0].inspectTop().isFaceUp());
