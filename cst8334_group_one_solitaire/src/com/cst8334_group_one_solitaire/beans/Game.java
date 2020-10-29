@@ -6,6 +6,8 @@ import com.cst8334_group_one_solitaire.commands.DrawCard;
 import com.cst8334_group_one_solitaire.commands.FlipCard;
 import com.cst8334_group_one_solitaire.commands.MoveCard;
 
+import java.util.Stack;
+
 public class Game {
 
 
@@ -61,6 +63,7 @@ public class Game {
 
     private void tableauClicked(int i) {
         System.out.println("Tableau[" + i + "] clicked");
+
         if (!board.tableau[i].isEmpty()) {
             if (board.tableau[i].inspectTop().isFaceUp()) {
                 System.out.println(board.tableau[i].inspectTop().toString());
@@ -99,7 +102,7 @@ public class Game {
     }
 
     private boolean checkForMove(CardPile fromPile) {
-        if (!fromPile.isEmpty()) {
+        if (!fromPile.isEmpty()) { // if the from pile is not empty
             Card tempCard = fromPile.inspectTop();
             System.out.println("Clicked on: " + tempCard.toString());
 
@@ -158,10 +161,21 @@ public class Game {
 
     }
 
+    /**
+     * Check if card colors are opposite from one another
+     * @param card1 First card to check
+     * @param card2 Second card to check
+     * @return true or false
+     */
     private static boolean checkCardColor(Card card1, Card card2) {
         return card1.getColor() != card2.getColor();
     }
 
+    /**
+     * Move a card from one pile to another
+     * @param fromPile Pile the card is coming from
+     * @param toPile Pile the card is moving to
+     */
     public void moveCard(CardPile fromPile, CardPile toPile) {
 
         Card card = fromPile.inspectTop();
@@ -179,18 +193,53 @@ public class Game {
 
     }
 
+    public void moveStack(CardPile fromPile, CardPile toPile) {
+        CardPile temp = new CardPile(0,0,0,0);
+
+        while(!fromPile.isEmpty()) {
+            if(!fromPile.inspectTop().isFaceUp()) {
+                break;
+            }
+            temp.addCard(fromPile.pile().pop(), false);
+        }
+
+        if (temp.inspectTop().getRank() == 12 && fromPile.isEmpty()) {
+            while(!temp.isEmpty()) {
+                fromPile.addCard(temp.pile().pop(), false);
+            }
+        }
+
+        while (!temp.isEmpty()) {
+            toPile.addCard(temp.pile().pop(), true);
+        }
+
+
+
+
+    }
+
+    /**
+     * Draw a card from stock pile
+     */
     public void drawFromDeck() {
         Card card = board.stockPile.removeTop(false);
         card.flip();
         board.talon.addCard(card, false);
     }
 
+    /**
+     * Add a card to stock pile
+     */
     public void addToDeck() {
         Card card = board.talon.removeTop(false);
         card.flip();
         board.stockPile.addCard(card, false);
     }
 
+    /**
+     * Flips a card
+     * @param cardToFlip The card to flip
+     */
     public void flipCard(Card cardToFlip) {
         cardToFlip.flip();
     }
