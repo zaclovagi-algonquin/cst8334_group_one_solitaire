@@ -1,11 +1,10 @@
 package com.cst8334_group_one_solitaire.beans;
 
 
-import com.cst8334_group_one_solitaire.commands.CommandInvoker;
-import com.cst8334_group_one_solitaire.commands.DrawCard;
-import com.cst8334_group_one_solitaire.commands.FlipCard;
-import com.cst8334_group_one_solitaire.commands.MoveCard;
+import com.cst8334_group_one_solitaire.commands.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Stack;
 
 public class Game {
@@ -110,7 +109,7 @@ public class Game {
             for (int i = 0; i < 4; i++) {
                 CardPile toPile = board.foundations[i];
                 if (toPile.isEmpty()) {
-                    if (tempCard.getRank() == 0) { //is ace
+                    if (tempCard.getRank() == 0) { // is ace
                         commandInvoker.executeOperation(new MoveCard(this, fromPile, toPile, 10));
                         return true;
                     }
@@ -139,10 +138,13 @@ public class Game {
                                 } else { // card from other row add 3 points
                                     commandInvoker.executeOperation(new MoveCard(this, fromPile, toPile, 3));
                                 }
+
+
                                 return true;
                             }
                         }
                     } else { //pile is empty, only kings can move.
+                        System.out.println("Else if");
                         if (tempCard.getRank() == 12) {
                             if (fromPile == board.talon) { // if card from deck add 5 points
                                 commandInvoker.executeOperation(new MoveCard(this, fromPile, toPile, 5));
@@ -154,6 +156,14 @@ public class Game {
                     }
 
                 }//end of piles !=
+                if (fromPile.pile().indexOf(tempCard) != toPile.indexOfBottomFaceUp()) {
+
+                    if (toPile.canReceiveCard(fromPile.pile().get(fromPile.indexOfBottomFaceUp()))) {
+                        commandInvoker.executeOperation(new MoveStackOfCards(this, fromPile, toPile, 5));
+                        return true;
+
+                    }
+                }
             } //end of tableau
         } //end of !fromPile.isEmpty()
 
@@ -163,6 +173,7 @@ public class Game {
 
     /**
      * Check if card colors are opposite from one another
+     *
      * @param card1 First card to check
      * @param card2 Second card to check
      * @return true or false
@@ -173,8 +184,9 @@ public class Game {
 
     /**
      * Move a card from one pile to another
+     *
      * @param fromPile Pile the card is coming from
-     * @param toPile Pile the card is moving to
+     * @param toPile   Pile the card is moving to
      */
     public void moveCard(CardPile fromPile, CardPile toPile) {
 
@@ -193,29 +205,23 @@ public class Game {
 
     }
 
+    /**
+     * Used to move a stack of cards to another tableau
+     * @param fromPile The tableau cards are coming from
+     * @param toPile The tableau the cards are going to
+     */
     public void moveStack(CardPile fromPile, CardPile toPile) {
-        CardPile temp = new CardPile(0,0,0,0);
+        CardPile moveable = new CardPile(0,0,0,0);
 
-        while(!fromPile.isEmpty()) {
-            if(!fromPile.inspectTop().isFaceUp()) {
+        while (!fromPile.isEmpty()) {
+            if (!fromPile.inspectTop().isFaceUp()) {
                 break;
             }
-            temp.addCard(fromPile.pile().pop(), false);
+            moveable.addCard(fromPile.pile().pop(), false);
         }
-
-        if (temp.inspectTop().getRank() == 12 && fromPile.isEmpty()) {
-            while(!temp.isEmpty()) {
-                fromPile.addCard(temp.pile().pop(), false);
-            }
+        while(!moveable.isEmpty()) {
+            toPile.addCard(moveable.pile().pop(), true);
         }
-
-        while (!temp.isEmpty()) {
-            toPile.addCard(temp.pile().pop(), true);
-        }
-
-
-
-
     }
 
     /**
@@ -238,6 +244,7 @@ public class Game {
 
     /**
      * Flips a card
+     *
      * @param cardToFlip The card to flip
      */
     public void flipCard(Card cardToFlip) {

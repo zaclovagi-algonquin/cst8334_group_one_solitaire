@@ -61,5 +61,27 @@ public class CardPile {
         return gameSpace;
     }
 
+    public int indexOfBottomFaceUp() {
 
+        for(int i = 0; i < pile.size(); i++) {
+            if(pile.get(i).isFaceUp()) {
+                System.out.println("indexOfBottomFaceUp = " + i);
+                return i;
+            }
+        }
+        System.out.println("indexOfBottomFaceUp = " + -1);
+        return -1;
+    }
+
+    // TODO: Not for final version, This check only applies to tableau's.
+    public boolean canReceiveCard(Card card) {
+        if(isEmpty()) {
+            //only a king ranked card can be received in an empty slot
+            return card.getRank() == 12; //12 represents the king rank
+        }else {
+            //only accept a card that is of opposite color and 1 LESS than topmost card
+            Card topCard = inspectTop();
+            return card.getColor() != topCard.getColor() && card.getRank() == topCard.getRank() - 1;
+        }
+    }
 }
