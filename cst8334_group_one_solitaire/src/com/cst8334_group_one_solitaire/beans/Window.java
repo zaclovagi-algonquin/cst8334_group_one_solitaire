@@ -71,7 +71,7 @@ public class Window extends JFrame {
         undo.setBackground(new Color(160, 82, 45)); //change color of button
         undo.setForeground(Color.WHITE); // text color
         add("North", undo);
-
+                
         setVisible(true);
     }
 

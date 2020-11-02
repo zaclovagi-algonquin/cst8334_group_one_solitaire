@@ -17,6 +17,7 @@ public class GamePanel extends JPanel {
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        g.drawString("Score: " + Game.getInstance().getScore(), 25, 35);
         for (int i = 0; i < 13; i++) {
             g.setColor(Color.black);
             CardPile cardPile = Game.board.allPiles()[i];
