@@ -7,9 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JButton;
+import javax.swing.*;
 
 import com.cst8334_group_one_solitaire.commands.CommandInvoker;
 
@@ -21,10 +19,35 @@ public class Window extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            Game.getInstance().restart();
+            Game.getInstance().startGame();
             CommandInvoker.getInstance().restart();
             repaint();
 
+        }
+    }
+
+    private static class CloseGame implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            System.exit(0);
+        }
+    }
+
+    private static class SwitchToVegas implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Game.getInstance().gameModeTest("vegas");
+            Game.getInstance().startGame();
+        }
+    }
+
+    private static class SwitchToRegular implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Game.getInstance().gameModeTest("regular");
+            Game.getInstance().startGame();
         }
     }
 
@@ -60,18 +83,40 @@ public class Window extends JFrame {
         setResizable(true);
         addMouseListener(new MouseKeeper());
 
-        JButton restart = new JButton("Restart");
-        restart.addActionListener(new RestartButtonListener());
-        restart.setBackground(new Color(160, 82, 45)); //change color of button
-        restart.setForeground(Color.WHITE); // text color
-        add("South", restart);
-
         JButton undo = new JButton("Undo");
         undo.addActionListener(new UndoButtonListener());
         undo.setBackground(new Color(160, 82, 45)); //change color of button
         undo.setForeground(Color.WHITE); // text color
-        add("North", undo);
-                
+        add("South", undo);
+
+//      Make Menu bar and menus
+        JMenuBar menuBar = new JMenuBar();
+        JMenu gameMenu = new JMenu("Game");
+        JMenu gameModeMenu = new JMenu("Gamemode");
+//      Make menu items
+        JMenuItem restart, exit;
+        restart = new JMenuItem("Restart");
+        exit = new JMenuItem("Exit");
+        JMenuItem regular, vegas;
+        regular = new JMenuItem("Regular");
+        vegas = new JMenuItem("Vegas");
+//      Add items to menu
+        gameMenu.add(restart);
+        gameModeMenu.add(regular);
+        gameModeMenu.add(vegas);
+        gameMenu.add(gameModeMenu);
+        gameMenu.add(exit);
+
+//      Add menu to menuBar
+        menuBar.add(gameMenu);
+
+        restart.addActionListener(new RestartButtonListener());
+        regular.addActionListener(new SwitchToRegular());
+        vegas.addActionListener(new SwitchToVegas());
+        exit.addActionListener(new CloseGame());
+
+
+        setJMenuBar(menuBar);
         setVisible(true);
     }
 

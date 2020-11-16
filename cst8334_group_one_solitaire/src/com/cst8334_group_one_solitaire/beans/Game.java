@@ -3,43 +3,37 @@ package com.cst8334_group_one_solitaire.beans;
 
 import com.cst8334_group_one_solitaire.commands.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Stack;
-
 public class Game {
 
 
     public static Board board;
     private final CommandInvoker commandInvoker;
     private static final Game INSTANCE = new Game();
-    private int score = 0;
+    private int score;
+    private int gameMode = 0;
 
     private Game() {
         commandInvoker = CommandInvoker.getInstance();
         GameGraphics.loadGraphics(this);
+        GameGraphics.initializeWindow();
         startGame();
-
     }
 
     public static Game getInstance() {
         return INSTANCE;
     }
 
-    private void startGame() {
+    public void startGame() {
         board = new Board(13); //manually declaring pile count since it is still hard coded
-        GameGraphics.initializeWindow();
         board.shuffle();
-        // GameGraphics.drawCards();
         GameGraphics.getPanel().repaint();
+        if (gameMode == 1) {
+            score = -52;
+        } else {
+            score = 0;
+        }
     }
 
-    public void restart() {
-        board = new Board(13);
-        board.shuffle();
-        GameGraphics.getPanel().repaint();
-        score = 0;
-    }
 
     public void select(int x, int y) {
         System.out.println("mouse clicked at: " + x + ", " + y);
@@ -110,7 +104,11 @@ public class Game {
                 CardPile toPile = board.foundations[i];
                 if (toPile.isEmpty()) {
                     if (tempCard.getRank() == 0) { // is ace
-                        commandInvoker.executeOperation(new MoveCard(this, fromPile, toPile, 10));
+                        if (gameMode == 1) {
+                            commandInvoker.executeOperation(new MoveCard(this, fromPile, toPile, 5));
+                        } else {
+                            commandInvoker.executeOperation(new MoveCard(this, fromPile, toPile, 10));
+                        }
                         return true;
                     }
                 } else { //foundations aren't empty, check if card matches suit and rank
@@ -118,7 +116,11 @@ public class Game {
                     if (tempCard.getSuit() == foundationTop.getSuit()) {
                         //suit matches, check rank
                         if (tempCard.getRank() - foundationTop.getRank() == 1) {
-                            commandInvoker.executeOperation(new MoveCard(this, fromPile, toPile, 10));
+                            if (gameMode == 1) {
+                                commandInvoker.executeOperation(new MoveCard(this, fromPile, toPile, 5));
+                            } else {
+                                commandInvoker.executeOperation(new MoveCard(this, fromPile, toPile, 10));
+                            }
                             return true;
                         }
                     }
@@ -268,6 +270,16 @@ public class Game {
      */
     public int getScore() {
         return score;
+    }
+
+    // if vegas return true
+    // TODO: Write a proper method to select a game mode
+    public void gameModeTest(String mode) {
+        if (mode.toLowerCase().equals("vegas")) {
+            gameMode = 1;
+        } else {
+            gameMode = 0;
+        }
     }
 
 }
