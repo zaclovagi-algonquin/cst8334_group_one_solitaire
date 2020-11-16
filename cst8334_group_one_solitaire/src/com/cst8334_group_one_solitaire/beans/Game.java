@@ -58,6 +58,10 @@ public class Game {
             }
             //removed foundation check
         }
+        
+        if(board.foundationFull()) {
+        	System.out.println("Game over! You won!!");
+        }
     }
 
     private void tableauClicked(int i) {
@@ -111,6 +115,7 @@ public class Game {
                 if (toPile.isEmpty()) {
                     if (tempCard.getRank() == 0) { // is ace
                         commandInvoker.executeOperation(new MoveCard(this, fromPile, toPile, 10));
+                        board.increaseFoundationCount();
                         return true;
                     }
                 } else { //foundations aren't empty, check if card matches suit and rank
@@ -119,6 +124,7 @@ public class Game {
                         //suit matches, check rank
                         if (tempCard.getRank() - foundationTop.getRank() == 1) {
                             commandInvoker.executeOperation(new MoveCard(this, fromPile, toPile, 10));
+                            board.increaseFoundationCount();
                             return true;
                         }
                     }

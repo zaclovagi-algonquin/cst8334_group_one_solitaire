@@ -9,6 +9,7 @@ public class Board {
     public CardPile stockPile;
     public CardPile tableau[];
     public final int pileCount;
+    private int foundationCount;
 
     public Board(int pileCount) {
         this.pileCount = pileCount;
@@ -61,6 +62,18 @@ public class Board {
         allPiles[11] = tableau[5];
         allPiles[12] = tableau[6];
         return allPiles;
+    }
+    
+    public void increaseFoundationCount() {
+    	foundationCount++;
+    }
+    
+    public Boolean foundationFull() {
+    	return foundationCount == 52;
+    }
+    
+    public int getFoundationCount() {
+    	return foundationCount;
     }
 
 }
