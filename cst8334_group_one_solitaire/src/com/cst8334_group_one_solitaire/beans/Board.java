@@ -9,7 +9,6 @@ public class Board {
     public CardPile stockPile;
     public CardPile tableau[];
     public final int pileCount;
-    private int foundationCount;
 
     public Board(int pileCount) {
         this.pileCount = pileCount;

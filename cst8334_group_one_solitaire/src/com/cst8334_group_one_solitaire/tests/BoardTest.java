@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.cst8334_group_one_solitaire.beans.Board;
+import com.cst8334_group_one_solitaire.beans.Card;
 import com.cst8334_group_one_solitaire.beans.CardPile;
 
 class BoardTest {
@@ -63,6 +64,51 @@ class BoardTest {
 		describedClass.shuffle();
 		
 		assertFalse(describedClass.stockPile.inspectTop().isFaceUp());
+	}
+	
+	@Test
+	public void foundationFullShouldReturnFalseIfFoundationEmpty() {
+		describedClass = new Board(13);
+		describedClass.shuffle();
+		
+		assertFalse(describedClass.foundationFull());
+		
+	}
+	
+	@Test
+	public void foundationFullShouldReturnTrueIfFoundationFull() {
+		describedClass = new Board(13);
+		
+		for(int i = 0; i < 4; i++) {
+			for(int j = 0; j < 13; j++) {
+				Card card = describedClass.stockPile.removeTop(false);
+				describedClass.foundations[i].addCard(card, false);
+			}
+		}
+		
+		assertTrue(describedClass.foundationFull());	
+	}
+	
+	@Test
+	public void getFoundationsCountShouldReturnZeroWhenEmpty() {
+		describedClass = new Board(13);
+		describedClass.shuffle();
+		
+		assertEquals(0, describedClass.getFoundationCount());
+	}
+	
+	@Test
+	public void foundationFullShouldReturn52WhenFull() {
+		describedClass = new Board(13);
+		
+		for(int i = 0; i < 4; i++) {
+			for(int j = 0; j < 13; j++) {
+				Card card = describedClass.stockPile.removeTop(false);
+				describedClass.foundations[i].addCard(card, false);
+			}
+		}
+		
+		assertEquals(52, describedClass.getFoundationCount());	
 	}
 
 }
