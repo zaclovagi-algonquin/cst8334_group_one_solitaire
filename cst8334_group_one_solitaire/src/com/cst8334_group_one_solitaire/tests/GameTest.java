@@ -102,7 +102,7 @@ class GameTest {
 		cardNotToMove.flip();
 		Card cardToMove = new Card(0, 1); //ace of hearts
 		cardToMove.flip();
-		Card tableauOneTop = new Card(0, 3); //two of clubs
+		Card tableauOneTop = new Card(0, 3); //three of clubs
 		Game.board.talon.addCard(cardNotToMove, false);
 		Game.board.talon.addCard(cardToMove, false);
 		Game.board.tableau[0].addCard(tableauOneTop, true);
