@@ -62,5 +62,18 @@ public class Board {
         allPiles[12] = tableau[6];
         return allPiles;
     }
+    
+    public Boolean foundationFull() {
+    	return getFoundationCount() == 52;
+    }
+    
+    public int getFoundationCount() {
+    	int total = 0;
+    	for(int i = 0; i < foundations.length; i++) {
+    		total += foundations[i].size();
+    	}
+    	
+    	return total;
+    }
 
 }

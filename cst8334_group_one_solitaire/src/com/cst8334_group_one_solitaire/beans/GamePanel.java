@@ -17,7 +17,15 @@ public class GamePanel extends JPanel {
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        if(!Game.board.foundationFull()) {
+        	g.drawString("You have " + (52 - Game.board.getFoundationCount()) + " cards to put in the foundation", 100, 35);
+        }else {
+        	g.drawString("CONGRATULATIONS, you've won!!", 100, 35);
+
+        }
+
         g.drawString("Score: " + Game.getInstance().getScore(), 25, 35);
+        
         for (int i = 0; i < 13; i++) {
             g.setColor(Color.black);
             CardPile cardPile = Game.board.allPiles()[i];
