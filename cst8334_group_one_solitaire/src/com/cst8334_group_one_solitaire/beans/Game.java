@@ -213,16 +213,17 @@ public class Game {
      * @param toPile The tableau the cards are going to
      */
     public void moveStack(CardPile fromPile, CardPile toPile) {
-        CardPile moveable = new CardPile(0,0,0,0);
+        CardPile movable = new CardPile(0,0,0,0);
 
         while (!fromPile.isEmpty()) {
             if (!fromPile.inspectTop().isFaceUp()) {
                 break;
             }
-            moveable.addCard(fromPile.pile().pop(), false);
+            movable.addCard(fromPile.pile().pop(), false);
+            System.out.println(movable.pile().size());
         }
-        while(!moveable.isEmpty()) {
-            toPile.addCard(moveable.pile().pop(), true);
+        while(!movable.isEmpty()) {
+            toPile.addCard(movable.pile().pop(), true);
         }
     }
 
