@@ -64,16 +64,17 @@ public class Board {
         return allPiles;
     }
     
-    public void increaseFoundationCount() {
-    	foundationCount++;
-    }
-    
     public Boolean foundationFull() {
-    	return foundationCount == 52;
+    	return getFoundationCount() == 52;
     }
     
     public int getFoundationCount() {
-    	return foundationCount;
+    	int total = 0;
+    	for(int i = 0; i < foundations.length; i++) {
+    		total += foundations[i].size();
+    	}
+    	
+    	return total;
     }
 
 }
