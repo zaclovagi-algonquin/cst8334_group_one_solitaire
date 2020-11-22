@@ -95,6 +95,24 @@ class GameTest {
 
 	}
 	
+	//test to ensure that stack move from talon bug does not happen again
+	@Test
+	public void talonClickedShouldNotMoveStack() {
+		Card cardNotToMove = new Card(1, 2); //two of spade
+		cardNotToMove.flip();
+		Card cardToMove = new Card(0, 1); //ace of hearts
+		cardToMove.flip();
+		Card tableauOneTop = new Card(0, 3); //three of clubs
+		Game.board.talon.addCard(cardNotToMove, false);
+		Game.board.talon.addCard(cardToMove, false);
+		Game.board.tableau[0].addCard(tableauOneTop, true);
+
+		game.select(1075, 55);
+		
+		assertEquals(2, Game.board.talon.size()); //no move made
+		assertEquals(Game.board.tableau[0].inspectTop().toString(), tableauOneTop.toString());
+	}
+	
 	@Test
 	public void tableauClickedShouldMoveKingToEmptyTableauPile() {
 		Card cardToMove = new Card(0, 12); //king of hearts

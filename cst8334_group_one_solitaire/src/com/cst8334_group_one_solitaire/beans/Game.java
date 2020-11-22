@@ -52,6 +52,10 @@ public class Game {
             }
             //removed foundation check
         }
+        
+        if(board.foundationFull()) {
+        	System.out.println("Game over! You won!!");
+        }
     }
 
     private void tableauClicked(int i) {
@@ -60,14 +64,14 @@ public class Game {
         if (!board.tableau[i].isEmpty()) {
             if (board.tableau[i].inspectTop().isFaceUp()) {
                 System.out.println(board.tableau[i].inspectTop().toString());
-                if (checkForMove(board.tableau[i]))
+                if (checkForMove(board.tableau[i], "tableau"))
                     return;
             } else {
                 Card cardToFlip = board.tableau[i].inspectTop();
                 commandInvoker.executeOperation(new FlipCard(this, cardToFlip, 5));
             }
         } else {
-            if (checkForMove(board.tableau[i]))
+            if (checkForMove(board.tableau[i], "tableau"))
                 return;
         }
     }
@@ -75,7 +79,7 @@ public class Game {
     private void talonClicked() {
         System.out.println("Talon pile clicked");
         if (!board.talon.isEmpty()) {
-            if (checkForMove(board.talon))
+            if (checkForMove(board.talon, "talon"))
                 return;
         }
     }
@@ -94,7 +98,7 @@ public class Game {
         }
     }
 
-    private boolean checkForMove(CardPile fromPile) {
+    private boolean checkForMove(CardPile fromPile, String from) {
         if (!fromPile.isEmpty()) { // if the from pile is not empty
             Card tempCard = fromPile.inspectTop();
             System.out.println("Clicked on: " + tempCard.toString());
@@ -158,7 +162,8 @@ public class Game {
                     }
 
                 }//end of piles !=
-                if (fromPile.pile().indexOf(tempCard) != toPile.indexOfBottomFaceUp()) {
+                if (fromPile.pile().indexOf(tempCard) != fromPile.indexOfBottomFaceUp() && from != "talon") {
+                	//prevent a card from the talon going through this block
 
                     if (toPile.canReceiveCard(fromPile.pile().get(fromPile.indexOfBottomFaceUp()))) {
                         commandInvoker.executeOperation(new MoveStackOfCards(this, fromPile, toPile, 5));
