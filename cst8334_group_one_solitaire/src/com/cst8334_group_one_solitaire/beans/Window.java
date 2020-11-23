@@ -1,19 +1,26 @@
 package com.cst8334_group_one_solitaire.beans;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import com.cst8334_group_one_solitaire.commands.CommandInvoker;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.*;
-
-import com.cst8334_group_one_solitaire.commands.CommandInvoker;
 
 public class Window extends JFrame {
     private static final long serialVersionUID = 1L;
 
+
+
+    private static class CumulativeCheckboxListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JCheckBoxMenuItem cb = (JCheckBoxMenuItem) e.getSource();
+            Game.getInstance().scoreTracking(cb.isSelected());
+        }
+    }
 
     private class RestartButtonListener implements ActionListener {
 
@@ -95,16 +102,19 @@ public class Window extends JFrame {
         JMenu gameModeMenu = new JMenu("Gamemode");
 //      Make menu items
         JMenuItem restart, exit;
+        JCheckBoxMenuItem cumulative;
         restart = new JMenuItem("Restart");
         exit = new JMenuItem("Exit");
         JMenuItem regular, vegas;
         regular = new JMenuItem("Regular");
         vegas = new JMenuItem("Vegas");
+        cumulative = new JCheckBoxMenuItem("Cumulative scoring");
 //      Add items to menu
         gameMenu.add(restart);
         gameModeMenu.add(regular);
         gameModeMenu.add(vegas);
         gameMenu.add(gameModeMenu);
+        gameModeMenu.add(cumulative);
         gameMenu.add(exit);
 
 //      Add menu to menuBar
@@ -114,6 +124,7 @@ public class Window extends JFrame {
         regular.addActionListener(new SwitchToRegular());
         vegas.addActionListener(new SwitchToVegas());
         exit.addActionListener(new CloseGame());
+        cumulative.addActionListener(new CumulativeCheckboxListener());
 
 
         setJMenuBar(menuBar);

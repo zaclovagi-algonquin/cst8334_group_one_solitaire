@@ -2,6 +2,10 @@ package com.cst8334_group_one_solitaire.beans;
 
 
 import com.cst8334_group_one_solitaire.commands.*;
+import com.cst8334_group_one_solitaire.database.ScoreManager;
+
+import java.sql.SQLException;
+import java.util.UUID;
 
 public class Game {
 
@@ -11,8 +15,12 @@ public class Game {
     private static final Game INSTANCE = new Game();
     private int score;
     private int gameMode = 0;
+    private boolean trackScore;
+    private final String gameSession;
 
     private Game() {
+        gameSession = UUID.randomUUID().toString();
+        System.out.println("Session ID: " + gameSession);
         commandInvoker = CommandInvoker.getInstance();
         GameGraphics.loadGraphics(this);
         GameGraphics.initializeWindow();
@@ -28,7 +36,16 @@ public class Game {
         board.shuffle();
         GameGraphics.getPanel().repaint();
         if (gameMode == 1) {
-            score = -52;
+            if (trackScore) {
+                try {
+                    score = ScoreManager.fetchScore();
+                } catch (SQLException e) {
+                    System.err.println(e);
+                }
+            } else {
+                score = -52;
+            }
+
         } else {
             score = 0;
         }
@@ -55,6 +72,13 @@ public class Game {
         
         if(board.foundationFull()) {
         	System.out.println("Game over! You won!!");
+        	if (trackScore) {
+                try {
+                    ScoreManager.insertScore();
+                } catch (SQLException e) {
+                    System.err.println(e);
+                }
+            }
         }
     }
 
@@ -278,6 +302,8 @@ public class Game {
         return score;
     }
 
+    public String getGameSession() {return gameSession;}
+
     // if vegas return true
     // TODO: Write a proper method to select a game mode
     public void gameModeTest(String mode) {
@@ -287,5 +313,11 @@ public class Game {
             gameMode = 0;
         }
     }
+
+    public void scoreTracking(boolean track) {
+        trackScore = track;
+    }
+
+
 
 }

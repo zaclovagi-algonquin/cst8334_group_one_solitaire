@@ -63,7 +63,7 @@ public class Board {
         return allPiles;
     }
     
-    public Boolean foundationFull() {
+    public boolean foundationFull() {
     	return getFoundationCount() == 52;
     }
     
