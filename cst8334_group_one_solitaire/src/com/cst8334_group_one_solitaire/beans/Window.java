@@ -64,6 +64,7 @@ public class Window extends JFrame {
         public void actionPerformed(ActionEvent e) {
             if (CommandInvoker.getInstance().undoOperation()) {
                 System.out.println("Move undone");
+                Game.getInstance().setLastMove("Undo");
             } else {
                 JOptionPane.showMessageDialog(null, "No move to undo.");
             }
@@ -80,11 +81,21 @@ public class Window extends JFrame {
         }
 
     }
+    
+    private static class Help implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JOptionPane.showMessageDialog(null, "Click a card! If there is a valid move, the game will move the card or stack automatically!");
+        }
+    }
 
     public Window() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setSize(1366, (int) screenSize.getHeight() - 100);
+        setLocationRelativeTo(null);
+        //setMinimumSize(new Dimension(1366, (int) screenSize.getHeight() - 100));
         getContentPane().setBackground(new Color(0, 120, 0));
         setTitle("Solitaire Game Java - Zac, David, Theodore, Sebastien");
         setResizable(true);
@@ -116,6 +127,7 @@ public class Window extends JFrame {
         gameMenu.add(gameModeMenu);
         gameModeMenu.add(cumulative);
         gameMenu.add(exit);
+        
 
 //      Add menu to menuBar
         menuBar.add(gameMenu);
@@ -125,8 +137,13 @@ public class Window extends JFrame {
         vegas.addActionListener(new SwitchToVegas());
         exit.addActionListener(new CloseGame());
         cumulative.addActionListener(new CumulativeCheckboxListener());
-
-
+        
+        JMenu helpMenu = new JMenu("Help");
+        JMenuItem howToPlay= new JMenuItem("How To Play");
+        helpMenu.add(howToPlay);
+        howToPlay.addActionListener(new Help());
+        
+        menuBar.add(helpMenu);
         setJMenuBar(menuBar);
         setVisible(true);
     }

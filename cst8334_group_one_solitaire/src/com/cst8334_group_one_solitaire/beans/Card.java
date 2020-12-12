@@ -73,6 +73,44 @@ public class Card {
             return Color.black;
         }
     }
+    
+    public String getName() {
+        String cardName = "";
+        String suitName = "";
+        String rankName = "";
+        if (rank != 0 && rank <= 9) {
+            rankName = ""+ (rank+1);
+        } else switch(rank) {
+            case 10:
+                rankName = "Jack";
+                break;
+            case 11:
+                rankName = "Queen";
+                break;
+            case 12: 
+                rankName = "King";
+                break;
+            case 0:
+                rankName = "Ace";
+                break;
+        }
+        switch(suit) {
+            case 0:
+                suitName = "Hearts";
+                break;
+            case 1:
+                suitName = "Spades";
+                break;
+            case 2:
+                suitName = "Diamonds";
+                break;
+            case 3:
+                suitName = "Clubs";
+                break;
+        }
+        cardName = rankName + " of " + suitName;
+        return cardName;
+    }
 
     @Override
     public String toString() {

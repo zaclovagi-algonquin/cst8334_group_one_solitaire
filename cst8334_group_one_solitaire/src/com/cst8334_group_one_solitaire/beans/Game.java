@@ -5,6 +5,8 @@ import com.cst8334_group_one_solitaire.commands.*;
 import com.cst8334_group_one_solitaire.database.ScoreManager;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Game {
@@ -17,6 +19,7 @@ public class Game {
     private int gameMode = 0;
     private boolean trackScore;
     private final String gameSession;
+    private String lastMove;
 
     private Game() {
         gameSession = UUID.randomUUID().toString();
@@ -32,6 +35,7 @@ public class Game {
     }
 
     public void startGame() {
+        lastMove = "";
         board = new Board(13); //manually declaring pile count since it is still hard coded
         board.shuffle();
         GameGraphics.getPanel().repaint();
@@ -116,9 +120,11 @@ public class Game {
                     addToDeck();
 
                 }
+                setLastMove("Return Talon to Stockpile");
             }
         } else {
             commandInvoker.executeOperation(new DrawCard(this));
+            setLastMove("Drew card from Stockpile");
         }
     }
 
@@ -233,6 +239,7 @@ public class Game {
         }
         toPile.addCard(card, expand);
         fromPile.removeTop(retract);
+        setLastMove(card.getName() + " from " + getPileName(fromPile) + " to " + getPileName(toPile));
 
     }
 
@@ -243,17 +250,27 @@ public class Game {
      */
     public void moveStack(CardPile fromPile, CardPile toPile) {
         CardPile movable = new CardPile(0,0,0,0);
-
+        List<String> cardNames = new ArrayList<String>();
+        setLastMove("");
         while (!fromPile.isEmpty()) {
             if (!fromPile.inspectTop().isFaceUp()) {
                 break;
             }
             movable.addCard(fromPile.pile().pop(), false);
+            cardNames.add(movable.inspectTop().getName());
             System.out.println(movable.pile().size());
         }
         while(!movable.isEmpty()) {
             toPile.addCard(movable.pile().pop(), true);
         }
+        for (int i = 0; i < cardNames.size(); i ++) {
+            if (i != 0) {
+                lastMove += ", ";
+                
+            }
+            lastMove += cardNames.get(i);
+        }
+        lastMove += " from "  +getPileName(fromPile) + " to " + toPile.toString();
     }
 
     /**
@@ -281,6 +298,7 @@ public class Game {
      */
     public void flipCard(Card cardToFlip) {
         cardToFlip.flip();
+        setLastMove("Flipped over the " + cardToFlip.getName());
     }
 
     /**
@@ -313,9 +331,48 @@ public class Game {
             gameMode = 0;
         }
     }
-
+    
+    public String getGameModeString() {
+        if (gameMode == 1) {
+            return "Vegas Rules";
+        } else return "Normal Rules";
+    }
+    
+    public void setLastMove(String string) {
+        lastMove = string;
+    }
+    public String getLastMove() {
+        return lastMove;
+    }
+    
     public void scoreTracking(boolean track) {
         trackScore = track;
+    }
+    
+    public String getPileName(CardPile pile) {
+        String pileName = "";
+        
+        if (pile == board.stockPile) {
+            pileName = "Stockpile";
+        } else if (pile == board.talon) {
+            pileName = "Talon";
+        } 
+        else {
+            for (int i = 0; i < board.foundations.length; i++) {
+                if (pile == board.foundations[i]) {
+                    pileName = "Foundation " + (i+1);
+                    break;
+                }
+            }
+            for (int i = 0; i < board.tableau.length; i++) {
+                if (pile == board.tableau[i]) {
+                    pileName = "Tableau " + (i+1);
+                    break;
+                }
+            }
+        }
+        
+        return pileName;
     }
 
 

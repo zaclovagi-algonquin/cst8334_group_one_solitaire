@@ -1,6 +1,7 @@
 package com.cst8334_group_one_solitaire.beans;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.util.Enumeration;
@@ -8,6 +9,7 @@ import javax.swing.JPanel;
 
 public class GamePanel extends JPanel {
 
+    Font stringFont = new Font("SansSerif", Font.PLAIN, 25);
     private final boolean debug = false;
 
     /**
@@ -16,15 +18,20 @@ public class GamePanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     public void paintComponent(Graphics g) {
+        g.setFont(stringFont);
         super.paintComponent(g);
         if(!Game.board.foundationFull()) {
-        	g.drawString("You have " + (52 - Game.board.getFoundationCount()) + " cards to put in the foundation", 100, 35);
+        	g.drawString("You have " + (52 - Game.board.getFoundationCount()) + " cards to put in the foundation", /*375*/ (this.getWidth()/3)+50, 35);
         }else {
-        	g.drawString("CONGRATULATIONS, you've won!!", 100, 35);
+        	g.drawString("CONGRATULATIONS, you've won!!", 375, 35);
 
         }
-
-        g.drawString("Score: " + Game.getInstance().getScore(), 25, 35);
+        g.drawString(Game.getInstance().getGameModeString(), this.getWidth()-160, 35);
+        g.drawString("Score: " + Game.getInstance().getScore(), 20, 35);
+        if (Game.getInstance().getLastMove() != "") {
+            g.drawString("Your last move was: " + Game.getInstance().getLastMove(), 5, this.getHeight()- 25); 
+        }
+        
         
         for (int i = 0; i < 13; i++) {
             g.setColor(Color.black);

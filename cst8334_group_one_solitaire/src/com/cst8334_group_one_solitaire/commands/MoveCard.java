@@ -15,6 +15,7 @@ public class MoveCard implements Command {
         this.toPile = toPile;
         this.game = game;
         this.score = score;
+        
     }
 
 
@@ -22,6 +23,7 @@ public class MoveCard implements Command {
     public void execute() {
         game.moveCard(fromPile, toPile);
         game.setScore(score);
+        
     }
 
     @Override
