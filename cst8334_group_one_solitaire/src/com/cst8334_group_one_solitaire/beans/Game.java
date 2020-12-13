@@ -7,6 +7,7 @@ import com.cst8334_group_one_solitaire.database.ScoreManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import java.util.UUID;
 
 public class Game {
@@ -20,8 +21,25 @@ public class Game {
     private boolean trackScore;
     private final String gameSession;
     private String lastMove;
+    
+    private int mouseX;
+    private int mouseY;
+    private boolean shiftKey;
+    private boolean controlKey;
+    private Hand hand;
+    private int clickY;
 
+    private boolean manualMove = false;
+    
+    public static final String autoHowTo = "Automove: Click a card! If there is a valid move, the game will move the card or stack automatically!";
+    public static final String manualHowTo = "Manual Move: Cards will follow the mouse. Clicking a stack will have it follow the mouse."
+            + "\nPress SHIFT and click to pick bottom of stack only\n"
+            + "Press SPACE when carrying a stack to drop the top card back down";
+    
     private Game() {
+        mouseX = 0;
+        mouseY = 0;
+        clickY=0;
         gameSession = UUID.randomUUID().toString();
         System.out.println("Session ID: " + gameSession);
         commandInvoker = CommandInvoker.getInstance();
@@ -36,6 +54,8 @@ public class Game {
 
     public void startGame() {
         lastMove = "";
+        hand= null;
+        shiftKey = false;
         board = new Board(13); //manually declaring pile count since it is still hard coded
         board.shuffle();
         GameGraphics.getPanel().repaint();
@@ -58,21 +78,27 @@ public class Game {
 
     public void select(int x, int y) {
         System.out.println("mouse clicked at: " + x + ", " + y);
-        //deck check
-        if (board.stockPile.isInArea(x, y)) {
-            stockPileClicked();
-            //talon check
-        } else if (board.talon.isInArea(x, y)) {
-            talonClicked();
-        } else {
-            //tableau check
-            for (int i = 0; i < 7; i++) {
-                if (board.tableau[i].isInArea(x, y)) {
-                    tableauClicked(i);
+        clickY=y;
+        if (manualMove) {
+            manualCardMove(x, y);
+        }else { //auto move
+          //deck check
+            if (board.stockPile.isInArea(x, y)) {
+                stockPileClicked();
+                //talon check
+            } else if (board.talon.isInArea(x, y)) {
+                talonClicked();
+            } else {
+                //tableau check
+                for (int i = 0; i < 7; i++) {
+                    if (board.tableau[i].isInArea(x, y)) {
+                        tableauClicked(i);
+                    }
                 }
+                //removed foundation check
             }
-            //removed foundation check
         }
+        
         
         if(board.foundationFull()) {
         	System.out.println("Game over! You won!!");
@@ -88,28 +114,103 @@ public class Game {
 
     private void tableauClicked(int i) {
         System.out.println("Tableau[" + i + "] clicked");
-
-        if (!board.tableau[i].isEmpty()) {
-            if (board.tableau[i].inspectTop().isFaceUp()) {
-                System.out.println(board.tableau[i].inspectTop().toString());
+        
+        if (manualMove == false) {
+            //auto move
+            if (!board.tableau[i].isEmpty()) {
+                if (board.tableau[i].inspectTop().isFaceUp()) {
+                    System.out.println(board.tableau[i].inspectTop().toString());
+                    if (checkForMove(board.tableau[i], "tableau"))
+                        return;
+                } else {
+                    Card cardToFlip = board.tableau[i].inspectTop();
+                    commandInvoker.executeOperation(new FlipCard(this, cardToFlip, 5));
+                }
+            } else {
                 if (checkForMove(board.tableau[i], "tableau"))
                     return;
-            } else {
-                Card cardToFlip = board.tableau[i].inspectTop();
-                commandInvoker.executeOperation(new FlipCard(this, cardToFlip, 5));
             }
         } else {
-            if (checkForMove(board.tableau[i], "tableau"))
-                return;
+            //manual move
+            if (hand == null) {
+                //no card
+                if (!board.tableau[i].isEmpty()) {
+                    if (board.tableau[i].inspectTop().isFaceUp()) {
+                        //card is face up, grab card.
+                        if (shiftKey) {
+                            hand = new Hand(board.tableau[i].inspectTop(), board.tableau[i]);
+                        } else {
+                            //check for stack move
+                            Card tempCard = board.tableau[i].inspectTop();
+                            if (board.tableau[i].pile().indexOf(tempCard) != board.tableau[i].indexOfBottomFaceUp() && board.tableau[i].getType() != "talon") 
+                            {
+                                CardPile movable = new CardPile(0,0,0,0);
+                                Stack<Card> tempPile = (Stack<Card>) board.tableau[i].pile().clone();
+                                while(!tempPile.isEmpty()) {
+                                    if (!tempPile.peek().isFaceUp()) {
+                                        break;
+                                    }
+                                    movable.addCard(tempPile.pop(), false);
+                                }
+                                hand = new Hand(movable, board.tableau[i]);
+                                return;
+                            }else {
+                                hand = new Hand(board.tableau[i].inspectTop(), board.tableau[i]);
+                                return;  
+                            }
+                        }
+                        
+                    } else {
+                        //card is face down, flip card
+                        Card cardToFlip = board.tableau[i].inspectTop();
+                        commandInvoker.executeOperation(new FlipCard(this, cardToFlip, 5));
+                    }
+                }
+                
+            } else { //card(s) in hand
+                if (!hand.isStack()) 
+                { //hand is one card
+                    if (board.tableau[i].canReceiveCard(hand.getCard())) {
+                        if (hand.getInPile() == board.talon) { // if card from deck add 5 points
+                            commandInvoker.executeOperation(new MoveCard(this, hand.getInPile(), board.tableau[i], 5));
+                            hand = null;
+                        } else { // card from other row add 3 points
+                            commandInvoker.executeOperation(new MoveCard(this, hand.getInPile(), board.tableau[i], 3));
+                            hand = null;
+                        }
+                    }
+                } 
+                else {
+                    //hand is a stack
+                    if (board.tableau[i].canReceiveCard(hand.getStack().inspectTop())) {
+                        commandInvoker.executeOperation(new MoveStackOfCards(this, hand.getStack(), hand.getInPile(), board.tableau[i], 5));
+                        hand = null;
+                    }
+                }
+                
+            }
         }
-    }
+
+
+    }//end of method
 
     private void talonClicked() {
         System.out.println("Talon pile clicked");
-        if (!board.talon.isEmpty()) {
-            if (checkForMove(board.talon, "talon"))
-                return;
+        if (manualMove == false) {
+            //auto move
+            if (!board.talon.isEmpty()) {
+                if (checkForMove(board.talon, "talon"))
+                    return;
+            } 
+        } else {
+            //manual move
+            if (!board.talon.isEmpty()) {
+                if (hand == null) {
+                    hand = new Hand(board.talon.inspectTop(), board.talon);
+                }
+            }
         }
+        
     }
 
     private void stockPileClicked() {
@@ -126,6 +227,48 @@ public class Game {
             commandInvoker.executeOperation(new DrawCard(this));
             setLastMove("Drew card from Stockpile");
         }
+    }
+    
+    private void foundationClicked(int i) { //only being used for manual move
+        if (!board.foundations[i].isEmpty()) {
+            if (hand == null) {
+                //grab card from foundation if not ace or 2
+                if (board.foundations[i].inspectTop().getRank() > 1) {
+                    hand = new Hand(board.foundations[i].inspectTop(), board.foundations[i]);
+                }
+            } else if (!hand.isStack()) 
+            {
+                Card foundationTop = board.foundations[i].inspectTop();
+                if (hand.getCard().getSuit() == foundationTop.getSuit()) {
+                    //suit matches, check rank
+                    if (hand.getCard().getRank() - foundationTop.getRank() == 1) {
+                        if (gameMode == 1) {
+                            commandInvoker.executeOperation(new MoveCard(this, hand.getInPile(), board.foundations[i], 5));
+                            hand = null;
+                        } else {
+                            commandInvoker.executeOperation(new MoveCard(this, hand.getInPile(), board.foundations[i], 10));
+                            hand = null;
+                        }
+                    }
+                }
+            }
+        } else {
+            if (hand != null) {
+                if (!hand.isStack()) {
+                    if (hand.getCard().getRank() == 0) {
+                        if (gameMode == 1) {
+                            commandInvoker.executeOperation(new MoveCard(this, hand.getInPile(),board.foundations[i], 5));
+                            hand = null;
+                        } else {
+                            commandInvoker.executeOperation(new MoveCard(this, hand.getInPile(),board.foundations[i], 10));
+                            hand = null;
+                        }
+                    } 
+                }
+                
+            }
+        }
+        
     }
 
     private boolean checkForMove(CardPile fromPile, String from) {
@@ -207,6 +350,62 @@ public class Game {
         return false;
 
     }
+    
+    public void manualCardMove(int x, int y) {
+        CardPile clickedPile = null;
+        
+        //check if a pile was clicked on
+        for (int i = 0; i < board.allPiles().length; i++) {
+            if (board.allPiles()[i].isInArea(x, y)) {
+                clickedPile = board.allPiles()[i];
+                break;
+            }
+        }
+        
+        if (clickedPile == null) {
+            //click was on nothing. 
+            return;
+        } 
+        else if (hand != null && clickedPile == hand.getInPile()) {
+            hand = null;
+        }
+        else if (clickedPile.getType("stockpile")) {
+            //stockpile was clicked
+            if (hand == null) {
+                stockPileClicked();
+            }
+        } 
+        else if (clickedPile.getType("talon")) {
+            //talon was clicked
+            talonClicked();
+            
+        } 
+        else if (clickedPile.getType("tableau")) {
+            //a tableau was clicked
+            int index = 0;
+            for (int i = 0; i < board.tableau.length; i++) {
+                if (clickedPile == board.tableau[i]) {
+                    index = i;
+                    break;
+                }
+            }
+            tableauClicked(index);
+            return;
+            
+        } 
+        else if (clickedPile.getType("foundation")) {
+            //a foundation was clicked
+            int index = 0;
+            for (int i = 0; i < board.foundations.length; i++) {
+                if (clickedPile == board.foundations[i]) {
+                    index = i;
+                    break;
+                }
+            }
+            foundationClicked(index);
+        } 
+    }
+    
 
     /**
      * Check if card colors are opposite from one another
@@ -270,7 +469,31 @@ public class Game {
             }
             lastMove += cardNames.get(i);
         }
-        lastMove += " from "  +getPileName(fromPile) + " to " + toPile.toString();
+        lastMove += " from "  +getPileName(fromPile) + " to " + getPileName(toPile);
+    }
+    
+    public void moveStack(CardPile fromPile, CardPile toPile, CardPile moveStack) {
+        setLastMove("");
+        List<String> cardNames = new ArrayList<String>();
+        CardPile movable = new CardPile(0,0,0,0);
+        for (int i = 0; i < moveStack.size(); i++) {
+            Card card = fromPile.pile().pop();
+            cardNames.add(card.getName());
+            movable.addCard(card, false);
+            
+        }
+        while (!movable.isEmpty()) {
+            toPile.addCard(movable.pile().pop(), true);
+        }
+        
+        for (int i = 0; i < cardNames.size(); i ++) {
+            if (i != 0) {
+                lastMove += ", ";
+                
+            }
+            lastMove += cardNames.get(i);
+        }
+        lastMove += " from "  +getPileName(fromPile) + " to " + getPileName(toPile);
     }
 
     /**
@@ -349,6 +572,14 @@ public class Game {
         trackScore = track;
     }
     
+    public void manualMove(boolean manual) {
+        manualMove = manual;
+    }
+    
+    public boolean manualMove() {
+        return manualMove;
+    }
+    
     public String getPileName(CardPile pile) {
         String pileName = "";
         
@@ -375,6 +606,59 @@ public class Game {
         return pileName;
     }
 
+    public void setMouse(int x, int y) {
+        mouseX = x;
+        mouseY = y;
+    }
+    
+    public int getMouseX() {
+        return mouseX;
+    }
+    
+    public int getMouseY() {
+        return mouseY;
+    }
+    
+    public Hand getHand() {
+        return hand;
+        
+    }
+    public void emptyHand() {
+        hand = null;
+    }
+    
+    public void setShiftKey(boolean pressed) {
+        shiftKey = pressed;
+    }
+    public boolean isShiftKeyPressed() {
+        return shiftKey;
+    }
+    
+    public void setControlKey(boolean pressed) {
+        controlKey = pressed;
+    }
+    public boolean isControlKeyPressed() {
+        return controlKey;
+    }
+    
+    public void dropCardFromStack() {
+        if (manualMove) {
+            if (hand.isStack()) {
+                hand.getStack().removeTop(false);
+                if (hand.getStack().isEmpty()) {
+                    hand = null;
+                } else if (hand.getStack().size() == 1) {
+                    hand = new Hand(hand.getStack().getCard(0), hand.getInPile());
+                }
+            }
+        }
+    }
 
+    public String getHelpDialog() {
+        if (manualMove) {
+            return manualHowTo;
+            
+        } else return autoHowTo;
+    }
 
 }

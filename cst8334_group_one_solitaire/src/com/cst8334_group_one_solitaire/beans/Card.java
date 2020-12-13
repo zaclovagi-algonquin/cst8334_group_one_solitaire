@@ -23,7 +23,7 @@ public class Card {
     private boolean faceUp;
     private final int rank;
     private final int suit;
-
+    
     //constructor
     public Card(int suit, int rank) {
         this.suit = suit;
@@ -34,7 +34,6 @@ public class Card {
     public void draw(Graphics g, int x, int y) {
 
         if (isFaceUp()) {
-
             if (getSuit() == HEART) {
                 g.drawImage(GameGraphics.hearts[rank], x, y, WIDTH, HEIGHT, null);
             } else if (getSuit() == SPADE) {
@@ -116,6 +115,7 @@ public class Card {
     public String toString() {
         return "Card [faceUp=" + faceUp + ", rank=" + rank + ", suit=" + suit + "]";
     }
+    
 
 
 }

@@ -116,4 +116,19 @@ public class GameGraphics {
     public static JPanel getPanel() {
         return gamePanel;
     }
+    
+    public static Image getCardFaceImage(int suit, int rank) {
+        switch(suit) {
+            case 0:
+                return hearts[rank];
+            case 1:
+                return spades[rank];
+            case 2: 
+                return diamonds[rank];
+            case 3: 
+                return clubs[rank];
+                default: return null;
+          
+        }
+    }
 }

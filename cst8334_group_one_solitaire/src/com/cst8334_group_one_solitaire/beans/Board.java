@@ -16,15 +16,15 @@ public class Board {
     }
 
     public void initialization() {
-        stockPile = new CardPile(1200, 55, Card.WIDTH, Card.HEIGHT);
-        talon = new CardPile(1075, 55, Card.WIDTH, Card.HEIGHT);
+        stockPile = new CardPile(1200, 55, Card.WIDTH, Card.HEIGHT).setType("stockpile");
+        talon = new CardPile(1075, 55, Card.WIDTH, Card.HEIGHT).setType("talon");
         foundations = new CardPile[4];
         tableau = new CardPile[7];
         for (int i = 0; i < 4; i++) {
-            foundations[i] = new CardPile(15 + (Card.WIDTH + 55) * i, 55, Card.WIDTH, Card.HEIGHT);
+            foundations[i] = new CardPile(15 + (Card.WIDTH + 55) * i, 55, Card.WIDTH, Card.HEIGHT).setType("foundation");
         }
         for (int i = 0; i < 7; i++) {
-            tableau[i] = new CardPile(15 + (Card.WIDTH + 55) * i, Card.HEIGHT + 65, Card.WIDTH, 0);
+            tableau[i] = new CardPile(15 + (Card.WIDTH + 55) * i, Card.HEIGHT + 65, Card.WIDTH, 0).setType("tableau");
         }
         Deck.initialization();
     }

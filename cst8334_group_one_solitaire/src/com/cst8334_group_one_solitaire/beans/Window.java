@@ -3,15 +3,19 @@ package com.cst8334_group_one_solitaire.beans;
 import com.cst8334_group_one_solitaire.commands.CommandInvoker;
 
 import javax.swing.*;
+import javax.swing.event.MouseInputAdapter;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javafx.scene.input.*;
 
 public class Window extends JFrame {
     private static final long serialVersionUID = 1L;
-
 
 
     private static class CumulativeCheckboxListener implements ActionListener {
@@ -19,6 +23,14 @@ public class Window extends JFrame {
         public void actionPerformed(ActionEvent e) {
             JCheckBoxMenuItem cb = (JCheckBoxMenuItem) e.getSource();
             Game.getInstance().scoreTracking(cb.isSelected());
+        }
+    }
+    
+    private static class ManualMoveCheckboxListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JCheckBoxMenuItem cb = (JCheckBoxMenuItem) e.getSource();
+            Game.getInstance().manualMove(cb.isSelected());
         }
     }
 
@@ -72,9 +84,39 @@ public class Window extends JFrame {
 
 
     }
+    
+    private static class CustomKeyListener implements KeyListener {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if(e.getKeyCode()==KeyEvent.VK_SPACE) {
+                Game.getInstance().dropCardFromStack();
+            }
+            
+        }
+
+        @Override
+        public void keyTyped(KeyEvent e) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            if(e.getKeyCode()==KeyEvent.VK_SHIFT) {
+                Game.getInstance().setShiftKey(false);
+                System.out.println("shift=false");
+            }
+            
+        }
+    }
 
     private static class MouseKeeper extends MouseAdapter {
         public void mousePressed(MouseEvent e) {
+            if (e.isShiftDown()) {
+                Game.getInstance().setShiftKey(true);
+            } else {
+                Game.getInstance().setShiftKey(false);
+            }
             int x = e.getX();
             int y = e.getY();
             Game.getInstance().select(x, y);
@@ -82,11 +124,23 @@ public class Window extends JFrame {
 
     }
     
+    private static class MouseMotion extends MouseInputAdapter {
+        public void mouseMoved(MouseEvent e) {
+            int x = e.getX();
+            int y = e.getY();
+            Game.getInstance().setMouse(x, y);
+        }
+    }
+    
     private static class Help implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            JOptionPane.showMessageDialog(null, "Click a card! If there is a valid move, the game will move the card or stack automatically!");
+            JOptionPane.showMessageDialog(null, Game.getInstance().getHelpDialog() + "\n\nTableau's stack cards in alternating colour and decreasing ranks (King -> Ace)"
+                    + "\nFoundations stack cards in matching suit and increasing ranks(Ace -> King)"
+                    + "\nGet all the cards into the foundations!"
+                    +"\n\nManual Move can be turned on/off in Game options"
+                    +"\nManual Move = " + Game.getInstance().manualMove());
         }
     }
 
@@ -100,6 +154,10 @@ public class Window extends JFrame {
         setTitle("Solitaire Game Java - Zac, David, Theodore, Sebastien");
         setResizable(true);
         addMouseListener(new MouseKeeper());
+        addMouseMotionListener(new MouseMotion());
+        addKeyListener(new CustomKeyListener());
+        setFocusable(true);
+        setFocusTraversalKeysEnabled(false);
 
         JButton undo = new JButton("Undo");
         undo.addActionListener(new UndoButtonListener());
@@ -128,6 +186,8 @@ public class Window extends JFrame {
         gameModeMenu.add(cumulative);
         gameMenu.add(exit);
         
+        JCheckBoxMenuItem manualMove = new JCheckBoxMenuItem("Manual Card Move");
+        gameMenu.add(manualMove);
 
 //      Add menu to menuBar
         menuBar.add(gameMenu);
@@ -137,6 +197,7 @@ public class Window extends JFrame {
         vegas.addActionListener(new SwitchToVegas());
         exit.addActionListener(new CloseGame());
         cumulative.addActionListener(new CumulativeCheckboxListener());
+        manualMove.addActionListener(new ManualMoveCheckboxListener());
         
         JMenu helpMenu = new JMenu("Help");
         JMenuItem howToPlay= new JMenuItem("How To Play");
