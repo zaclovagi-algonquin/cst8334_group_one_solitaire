@@ -1,5 +1,8 @@
 package com.cst8334_group_one_solitaire.beans;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GameSpace {
 
     public int x, y;
@@ -10,6 +13,12 @@ public class GameSpace {
         this.y = y;
         this.xDim = x + xDim;
         this.yDim = y + yDim;
+    }
+    public GameSpace(GameSpace gameSpace) {
+        this.x = gameSpace.x;
+        this.y = gameSpace.y;
+        this.xDim = gameSpace.x + gameSpace.xDim;
+        this.yDim = gameSpace.y + gameSpace.yDim;
     }
 
     public GameSpace(int x, int y) {

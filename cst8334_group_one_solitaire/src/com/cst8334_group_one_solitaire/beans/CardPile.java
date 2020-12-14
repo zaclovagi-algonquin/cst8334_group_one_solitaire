@@ -7,6 +7,7 @@ public class CardPile {
     //these values store the coordinates of the pile
     private final GameSpace gameSpace;
     private final Stack<Card> pile; //this is the stack of cards in the pile
+    private String type;
 
     public CardPile(int x, int y, int xDim, int yDim) {
         gameSpace = new GameSpace(x, y, xDim, yDim);
@@ -78,10 +79,24 @@ public class CardPile {
         if(isEmpty()) {
             //only a king ranked card can be received in an empty slot
             return card.getRank() == 12; //12 represents the king rank
-        }else {
+        }else if (inspectTop().isFaceUp()){
             //only accept a card that is of opposite color and 1 LESS than topmost card
             Card topCard = inspectTop();
             return card.getColor() != topCard.getColor() && card.getRank() == topCard.getRank() - 1;
         }
+        return false;
+    }
+    public CardPile setType(String type) {
+        this.type = type;
+        return this;
+    }
+    public String getType() {
+        return type;
+    }
+    
+    public boolean getType(String string) {
+        if (type == string) {
+            return true;
+        } else return false;
     }
 }
