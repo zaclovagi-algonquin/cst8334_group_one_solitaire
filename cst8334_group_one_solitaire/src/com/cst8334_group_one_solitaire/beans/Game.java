@@ -78,6 +78,7 @@ public class Game {
 
     public void select(int x, int y) {
         System.out.println("mouse clicked at: " + x + ", " + y);
+        y-=40;
         clickY=y;
         if (manualMove) {
             manualCardMove(x, y);
@@ -310,7 +311,19 @@ public class Game {
                 if (fromPile != toPile) {
                     if (!toPile.isEmpty()) {
                         Card tableauTop = toPile.inspectTop();
-                        if (checkCardColor(tempCard, tableauTop)) { //color is opposite
+                        if (toPile.canReceiveCard(fromPile.inspectTop())) {
+                            if (fromPile == board.talon) { // if card from deck add 5 points
+                                commandInvoker.executeOperation(new MoveCard(this, fromPile, toPile, 5));
+                            } else { // card from other row add 3 points
+                                commandInvoker.executeOperation(new MoveCard(this, fromPile, toPile, 3));
+                            }
+
+
+                            return true;
+                        }
+                        /*
+                        if (checkCardColor(tempCard, tableauTop)) 
+                        { //color is opposite
                             if (tableauTop.getRank() - tempCard.getRank() == 1) {
                                 if (fromPile == board.talon) { // if card from deck add 5 points
                                     commandInvoker.executeOperation(new MoveCard(this, fromPile, toPile, 5));
@@ -321,7 +334,7 @@ public class Game {
 
                                 return true;
                             }
-                        }
+                        }*/
                     } else { //pile is empty, only kings can move.
                         System.out.println("Else if");
                         if (tempCard.getRank() == 12) {
@@ -574,6 +587,9 @@ public class Game {
     
     public void manualMove(boolean manual) {
         manualMove = manual;
+        if (manualMove == false) {
+            hand = null;
+        }
     }
     
     public boolean manualMove() {
@@ -643,6 +659,9 @@ public class Game {
     
     public void dropCardFromStack() {
         if (manualMove) {
+            if (hand == null) {
+                return;
+            }
             if (hand.isStack()) {
                 hand.getStack().removeTop(false);
                 if (hand.getStack().isEmpty()) {
@@ -650,6 +669,8 @@ public class Game {
                 } else if (hand.getStack().size() == 1) {
                     hand = new Hand(hand.getStack().getCard(0), hand.getInPile());
                 }
+            } else if (hand.getCard() != null) {
+                hand = null;
             }
         }
     }

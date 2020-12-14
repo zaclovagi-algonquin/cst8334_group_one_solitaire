@@ -79,11 +79,12 @@ public class CardPile {
         if(isEmpty()) {
             //only a king ranked card can be received in an empty slot
             return card.getRank() == 12; //12 represents the king rank
-        }else {
+        }else if (inspectTop().isFaceUp()){
             //only accept a card that is of opposite color and 1 LESS than topmost card
             Card topCard = inspectTop();
             return card.getColor() != topCard.getColor() && card.getRank() == topCard.getRank() - 1;
         }
+        return false;
     }
     public CardPile setType(String type) {
         this.type = type;

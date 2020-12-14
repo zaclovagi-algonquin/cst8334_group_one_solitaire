@@ -1,6 +1,7 @@
 package com.cst8334_group_one_solitaire.beans;
 
 import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -89,6 +90,7 @@ public class GamePanel extends JPanel {
                           Game.getInstance().getMouseX()-40, Game.getInstance().getMouseY()-40+(40*occurences), Card.WIDTH, Card.HEIGHT, null);
                   occurences++;
               }
+              
           }else {
               Card card = Game.getInstance().getHand().getCard();
               Graphics2D g2 = (Graphics2D)g;
@@ -97,6 +99,16 @@ public class GamePanel extends JPanel {
               g2.drawImage(GameGraphics.getCardFaceImage(card.getSuit(), card.getRank()), 
                       Game.getInstance().getMouseX()-40, Game.getInstance().getMouseY()-40, Card.WIDTH, Card.HEIGHT, null);
           }
+          GameSpace pileGameSpace = Game.getInstance().getHand().getInPile().getGameSpace();
+          Graphics2D g2 = (Graphics2D)g;
+          g2.setStroke(new BasicStroke(3));
+          g2.setColor(Color.BLACK);
+          int height = Card.HEIGHT+6;
+          if (Game.getInstance().getHand().getInPile().getType("tableau")) {
+              height = (Game.getInstance().getHand().getInPile().size()*40)+58;
+          }
+          g2.drawRect(pileGameSpace.x-3, pileGameSpace.y-3, pileGameSpace.width()+6, height);
+          
               
       }
         

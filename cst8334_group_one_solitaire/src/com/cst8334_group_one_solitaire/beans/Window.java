@@ -16,6 +16,7 @@ import javafx.scene.input.*;
 
 public class Window extends JFrame {
     private static final long serialVersionUID = 1L;
+    private static JCheckBoxMenuItem manualMove;
 
 
     private static class CumulativeCheckboxListener implements ActionListener {
@@ -91,6 +92,10 @@ public class Window extends JFrame {
             if(e.getKeyCode()==KeyEvent.VK_SPACE) {
                 Game.getInstance().dropCardFromStack();
             }
+            if(e.getKeyCode()==KeyEvent.VK_ENTER) {
+                Game.getInstance().manualMove(!Game.getInstance().manualMove());
+                manualMove.doClick();
+            }
             
         }
 
@@ -102,10 +107,7 @@ public class Window extends JFrame {
 
         @Override
         public void keyReleased(KeyEvent e) {
-            if(e.getKeyCode()==KeyEvent.VK_SHIFT) {
-                Game.getInstance().setShiftKey(false);
-                System.out.println("shift=false");
-            }
+            
             
         }
     }
@@ -140,7 +142,7 @@ public class Window extends JFrame {
                     + "\nFoundations stack cards in matching suit and increasing ranks(Ace -> King)"
                     + "\nGet all the cards into the foundations!"
                     +"\n\nManual Move can be turned on/off in Game options"
-                    +"\nManual Move = " + Game.getInstance().manualMove());
+                    +"\nManual Move is " + (Game.getInstance().manualMove() ? "on" : "off"));
         }
     }
 
@@ -186,7 +188,7 @@ public class Window extends JFrame {
         gameModeMenu.add(cumulative);
         gameMenu.add(exit);
         
-        JCheckBoxMenuItem manualMove = new JCheckBoxMenuItem("Manual Card Move");
+        manualMove = new JCheckBoxMenuItem("Manual Card Move");
         gameMenu.add(manualMove);
 
 //      Add menu to menuBar
